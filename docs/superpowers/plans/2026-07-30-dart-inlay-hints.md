@@ -31,8 +31,10 @@ lsp4j, existing test bases `DartBridgeLspServerTest` / `DartCodeInsightFixtureTe
 - All Gradle commands run from `third_party/`.
 - CHANGELOG entries go under `## Unreleased` in `third_party/CHANGELOG.md`, phrased like the
   existing entries (gerund/noun style, e.g. "Highlighting …", not "Add …"), with the PR number.
-- Commits: short imperative subject, ending with
-  `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`.
+- Commits: short imperative subject. **NO `Co-Authored-By: Claude …` trailer** — Google's CLA
+  bot treats co-authors as contributors and fails the check (learned on PRs #551/#552; original
+  trailer instruction retracted 2026-07-30). Author/committer must be `ralph@dasralph.de`
+  (repo-local git config is set accordingly).
 - PR bodies: describe behavior + trade-offs (per the migrate-das-to-lsp skill: "Always explicitly
   document any functional differences"), reference the issues named per part, and end with
   `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
@@ -58,7 +60,10 @@ lsp4j, existing test bases `DartBridgeLspServerTest` / `DartCodeInsightFixtureTe
 
 # Part 1 — PR "Rename closing-labels provider" (branch `rename-closing-labels-provider`)
 
-Independent of everything else; mergeable immediately. Not user-facing → **no CHANGELOG entry**.
+Independent of everything else; mergeable immediately. ~~Not user-facing → **no CHANGELOG entry**.~~
+(2026-07-30: overridden by Ralph — entry added under `Unreleased`/`### Changed`.)
+
+> **Status 2026-07-30:** shipped as [PR #551](https://github.com/flutter/dart-intellij-third-party/pull/551) (open, CLA green).
 
 ### Task 1.1: Rename `DartInlayHintsProvider` → `DartClosingLabelsInlayHintsProvider`
 
@@ -74,14 +79,14 @@ Independent of everything else; mergeable immediately. Not user-facing → **no 
   `companion object { const val PROVIDER_ID: String = "dart.closing.labels" }`.
 - Consumes: nothing from other tasks.
 
-- [ ] **Step 1: Create the branch**
+- [x] **Step 1: Create the branch**
 
 ```bash
 git checkout main && git pull origin main
 git checkout -b rename-closing-labels-provider
 ```
 
-- [ ] **Step 2: Rename the file and class**
+- [x] **Step 2: Rename the file and class**
 
 ```bash
 git mv third_party/src/main/java/com/jetbrains/lang/dart/hints/DartInlayHintsProvider.kt \
@@ -94,7 +99,7 @@ In the renamed file change only the class name (body stays identical):
 class DartClosingLabelsInlayHintsProvider : InlayHintsProvider {
 ```
 
-- [ ] **Step 3: Update references**
+- [x] **Step 3: Update references**
 
 `DartClosingLabelManager.java`: change the import to
 `com.jetbrains.lang.dart.hints.DartClosingLabelsInlayHintsProvider` and both usages to
@@ -104,7 +109,7 @@ class DartClosingLabelsInlayHintsProvider : InlayHintsProvider {
 `implementationClass` to `com.jetbrains.lang.dart.hints.DartClosingLabelsInlayHintsProvider`.
 All other attributes (`providerId="dart.closing.labels"`, `nameKey`, `group`, …) stay unchanged.
 
-- [ ] **Step 4: Verify no stale references remain**
+- [x] **Step 4: Verify no stale references remain**
 
 ```bash
 grep -rn "DartInlayHintsProvider" third_party/src third_party/gen
@@ -112,7 +117,7 @@ grep -rn "DartInlayHintsProvider" third_party/src third_party/gen
 
 Expected: no matches.
 
-- [ ] **Step 5: Compile, run the unit test suite, run the plugin verifier**
+- [x] **Step 5: Compile, run the unit test suite, run the plugin verifier**
 
 ```bash
 cd third_party && ./gradlew compileKotlin compileJava && ./gradlew test --tests "com.jetbrains.lang.dart.*" && ./gradlew verifyPlugin
@@ -120,12 +125,12 @@ cd third_party && ./gradlew compileKotlin compileJava && ./gradlew test --tests 
 
 Expected: BUILD SUCCESSFUL, tests green, verifier clean (a pure rename must not change baselines).
 
-- [ ] **Step 6: Repository code review**
+- [x] **Step 6: Repository code review**
 
 Run the `.agents/skills/code-review/SKILL.md` protocol on `git diff main...HEAD` (all passes,
 against `.gemini/styleguide.md`). Fix every `[MUST-FIX]`/`[CONCERN]` finding before continuing.
 
-- [ ] **Step 7: Commit, push, open PR**
+- [x] **Step 7: Commit, push, open PR**
 
 ```bash
 git add -A && git commit -m "Rename DartInlayHintsProvider to DartClosingLabelsInlayHintsProvider
@@ -152,6 +157,10 @@ a shared handler; read/write kinds exist since dart-lang/sdk#62929). PR referenc
 flutter/dart-intellij-third-party#546 (lists this endpoint as required) and #92 (object-pattern
 highlights, fixed in LSP mode).
 
+> **Status 2026-07-30:** shipped as [PR #552](https://github.com/flutter/dart-intellij-third-party/pull/552) (open, CLA green).
+> Full migrate-das-to-lsp sandbox checklist verified (read/write kinds confirmed with Dart 3.13.0-282.3.beta;
+> reviewer testing notes on the client-side highlight cache are in the PR body).
+
 ### Task 2.1: Forward `textDocument/documentHighlight` in the bridge (TDD)
 
 **Files:**
@@ -164,14 +173,14 @@ highlights, fixed in LSP mode).
 - Consumes: existing `forwardRequest(method, params, responseType)` and the test fixtures
   `capturedRequests` / `capturedListener` already present in `DartBridgeLspServerTest`.
 
-- [ ] **Step 1: Create the branch**
+- [x] **Step 1: Create the branch**
 
 ```bash
 git checkout main && git pull origin main
 git checkout -b lsp-document-highlight
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 Add to `DartBridgeLspServerTest.kt` (imports to add:
 `org.eclipse.lsp4j.DocumentHighlightKind`, `org.eclipse.lsp4j.DocumentHighlightParams`):
@@ -217,7 +226,7 @@ fun testDocumentHighlightRequest() {
 }
 ```
 
-- [ ] **Step 3: Run the test — expect compile failure**
+- [x] **Step 3: Run the test — expect compile failure**
 
 ```bash
 cd third_party && ./gradlew test --tests "com.jetbrains.lang.dart.lsp.DartBridgeLspServerTest"
@@ -226,7 +235,7 @@ cd third_party && ./gradlew test --tests "com.jetbrains.lang.dart.lsp.DartBridge
 Expected: FAILS — `documentHighlight` is not overridden (unresolved reference / lsp4j default
 throws `UnsupportedOperationException`).
 
-- [ ] **Step 4: Implement the bridge forwarding**
+- [x] **Step 4: Implement the bridge forwarding**
 
 In `DartBridgeLspServer.kt` (imports to add: `org.eclipse.lsp4j.DocumentHighlight`,
 `org.eclipse.lsp4j.DocumentHighlightParams`):
@@ -251,13 +260,13 @@ override fun documentHighlight(params: DocumentHighlightParams): CompletableFutu
 }
 ```
 
-- [ ] **Step 5: Run the test — expect pass**
+- [x] **Step 5: Run the test — expect pass**
 
 ```bash
 ./gradlew test --tests "com.jetbrains.lang.dart.lsp.DartBridgeLspServerTest"
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A && git commit -m "Forward textDocument/documentHighlight in DartBridgeLspServer
@@ -279,7 +288,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
   `DartConfigurable.isExperimentalLspFeaturesEnabled(project)` (existing).
 - Produces: `LspMethod.DOCUMENT_HIGHLIGHT`; an enabled `documentHighlightsCustomizer`.
 
-- [ ] **Step 1: Add the LspMethod entry**
+- [x] **Step 1: Add the LspMethod entry**
 
 In `LspMethod.kt`, after `DIAGNOSTIC_SERVER`:
 
@@ -287,7 +296,7 @@ In `LspMethod.kt`, after `DIAGNOSTIC_SERVER`:
 DOCUMENT_HIGHLIGHT("textDocument/documentHighlight", isExperimental = true, presentableName = "read/write highlighting"),
 ```
 
-- [ ] **Step 2: Enable the customizer in the descriptor**
+- [x] **Step 2: Enable the customizer in the descriptor**
 
 In `DartLspServerDescriptor.kt` replace
 `override val documentHighlightsCustomizer = LspDocumentHighlightsDisabled` with:
@@ -308,7 +317,7 @@ Imports to add: `com.intellij.platform.dartlsp.api.customization.LspDocumentHigh
 `com.intellij.platform.dartlsp.api.customization.LspDocumentHighlightsSupport`,
 `com.intellij.psi.PsiFile`.
 
-- [ ] **Step 3: Run the LSP test suites**
+- [x] **Step 3: Run the LSP test suites**
 
 ```bash
 ./gradlew test --tests "com.jetbrains.lang.dart.lsp.*"
@@ -317,7 +326,7 @@ Imports to add: `com.intellij.platform.dartlsp.api.customization.LspDocumentHigh
 Expected: PASS (the experimental-features label test picks up the new presentable name
 automatically; if it asserts the literal feature list, update the expected string).
 
-- [ ] **Step 4: Add the CHANGELOG entry**
+- [x] **Step 4: Add the CHANGELOG entry**
 
 Under `## Unreleased` / `### Added`:
 
@@ -327,7 +336,7 @@ Under `## Unreleased` / `### Added`:
 
 (Replace `#PR` with the actual PR number after opening the PR — amend the commit.)
 
-- [ ] **Step 5: Manual sandbox verification (migrate-das-to-lsp checklist)**
+- [x] **Step 5: Manual sandbox verification (migrate-das-to-lsp checklist)**
 
 ```bash
 ./gradlew clean prepareSandbox --no-build-cache && ./gradlew runIde
@@ -348,7 +357,7 @@ read color. Verify all checklist cases:
 Capture before/after screenshots (flag off vs on) for the PR description (per the
 migrate-das-to-lsp skill's baseline/visual-proof guidance).
 
-- [ ] **Step 6: Plugin verifier + repository code review**
+- [x] **Step 6: Plugin verifier + repository code review**
 
 ```bash
 ./gradlew verifyPlugin
@@ -358,7 +367,7 @@ Run `third_party/tool/update_baselines.sh` only if verifier baselines changed. T
 `.agents/skills/code-review/SKILL.md` protocol on `git diff main...HEAD` (all passes, against
 `.gemini/styleguide.md`) and fix every `[MUST-FIX]`/`[CONCERN]` finding.
 
-- [ ] **Step 7: Commit, push, open PR**
+- [x] **Step 7: Commit, push, open PR**
 
 ```bash
 git add -A && git commit -m "Highlight read vs write occurrences via LSP documentHighlight
