@@ -36,6 +36,23 @@ lsp4j, existing test bases `DartBridgeLspServerTest` / `DartCodeInsightFixtureTe
 - PR bodies: describe behavior + trade-offs (per the migrate-das-to-lsp skill: "Always explicitly
   document any functional differences"), reference the issues named per part, and end with
   `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+- **Code review before every PR:** run the repository's own review skill
+  (`.agents/skills/code-review/SKILL.md`) on `git diff main...HEAD` — multi-pass
+  (thirdPartySrc check / correctness / resource management / design + `.gemini/styleguide.md`) —
+  and fix all `[MUST-FIX]` and `[CONCERN]` findings. This is IN ADDITION to the superpowers review
+  stages (subagent-driven-development's spec-compliance and code-quality reviewers).
+- **migrate-das-to-lsp compliance** (`.agents/skills/migrate-das-to-lsp/SKILL.md`): its testing
+  checklist applies to Parts 2 and 3 — clean sandbox
+  (`./gradlew clean prepareSandbox --no-build-cache`), files open at IDE startup AND opened
+  dynamically later, external files (`.pub-cache`, `dart:io`), injected fragments and scratch
+  files, settings-toggle lifecycle (no hanging sockets/state), and `./gradlew verifyPlugin`
+  (run `third_party/tool/update_baselines.sh` only if verifier baselines change). Its Step 1
+  ("gate the legacy provider") is **N/A for both features** — there is no Dart legacy provider for
+  inlay hints (new feature; closing labels are a separate mechanism), and for document highlights
+  the platform itself prefers the LSP highlight handler over the built-in PSI identifier
+  highlighting whenever the handler is active. State this in the PR descriptions. The
+  document-sync nuance (bridge ignores `didOpen`/`didChange`) is already handled by the existing
+  hover/definition infrastructure — no new work.
 
 ---
 
@@ -95,15 +112,20 @@ grep -rn "DartInlayHintsProvider" third_party/src third_party/gen
 
 Expected: no matches.
 
-- [ ] **Step 5: Compile and run the unit test suite**
+- [ ] **Step 5: Compile, run the unit test suite, run the plugin verifier**
 
 ```bash
-cd third_party && ./gradlew compileKotlin compileJava && ./gradlew test --tests "com.jetbrains.lang.dart.*"
+cd third_party && ./gradlew compileKotlin compileJava && ./gradlew test --tests "com.jetbrains.lang.dart.*" && ./gradlew verifyPlugin
 ```
 
-Expected: BUILD SUCCESSFUL, tests green.
+Expected: BUILD SUCCESSFUL, tests green, verifier clean (a pure rename must not change baselines).
 
-- [ ] **Step 6: Commit, push, open PR**
+- [ ] **Step 6: Repository code review**
+
+Run the `.agents/skills/code-review/SKILL.md` protocol on `git diff main...HEAD` (all passes,
+against `.gemini/styleguide.md`). Fix every `[MUST-FIX]`/`[CONCERN]` finding before continuing.
+
+- [ ] **Step 7: Commit, push, open PR**
 
 ```bash
 git add -A && git commit -m "Rename DartInlayHintsProvider to DartClosingLabelsInlayHintsProvider
@@ -305,7 +327,7 @@ Under `## Unreleased` / `### Added`:
 
 (Replace `#PR` with the actual PR number after opening the PR — amend the commit.)
 
-- [ ] **Step 5: Manual sandbox verification**
+- [ ] **Step 5: Manual sandbox verification (migrate-das-to-lsp checklist)**
 
 ```bash
 ./gradlew clean prepareSandbox --no-build-cache && ./gradlew runIde
@@ -314,10 +336,29 @@ Under `## Unreleased` / `### Added`:
 In the sandbox IDE: enable *Settings | Languages & Frameworks | Dart | Turn on experimental LSP
 features*; open a Dart file with `var a = ''; a = 'x'; print(a);`; caret on `a` — the assignment
 occurrence must use the write color ("Write identifier under caret"), the `print(a)` occurrence the
-read color. Also verify a file from `.pub-cache` and toggling the setting off restores today's
-uniform highlighting.
+read color. Verify all checklist cases:
 
-- [ ] **Step 6: Commit, push, open PR**
+- a file already open at IDE startup AND a file opened afterwards,
+- an external file (`.pub-cache` dependency and a `dart:` SDK library),
+- a Dart scratch file and an injected fragment (Dart inside an HTML `<script type="application/dart">`
+  block) — these must not break; falling back to today's uniform highlighting is acceptable
+  (the LSP handler skips non-local/injected files by design),
+- toggling the setting off restores today's uniform highlighting without errors in `idea.log`.
+
+Capture before/after screenshots (flag off vs on) for the PR description (per the
+migrate-das-to-lsp skill's baseline/visual-proof guidance).
+
+- [ ] **Step 6: Plugin verifier + repository code review**
+
+```bash
+./gradlew verifyPlugin
+```
+
+Run `third_party/tool/update_baselines.sh` only if verifier baselines changed. Then run the
+`.agents/skills/code-review/SKILL.md` protocol on `git diff main...HEAD` (all passes, against
+`.gemini/styleguide.md`) and fix every `[MUST-FIX]`/`[CONCERN]` finding.
+
+- [ ] **Step 7: Commit, push, open PR**
 
 ```bash
 git add -A && git commit -m "Highlight read vs write occurrences via LSP documentHighlight
@@ -334,6 +375,8 @@ gh pr create --repo flutter/dart-intellij-third-party --base main \
   --body "Enables LSP \`textDocument/documentHighlight\` through the bridge behind the experimental-LSP setting. With current SDKs the server sets \`DocumentHighlightKind\` Read/Write/Text (dart-lang/sdk#62929), so writes get the write caret color — matching Java/Kotlin behavior. Contributes one of the endpoints listed in #546; object-pattern highlights (#92) work in LSP mode.
 
 Trade-offs: on SDKs without highlight kinds everything renders as read (today's behavior). Find Usages read/write classification is not covered by LSP documentHighlight (would need a \`ReadWriteAccessDetector\`, see design doc).
+
+Per the migrate-das-to-lsp skill: there is no Dart legacy provider to gate for this feature — the platform automatically prefers the LSP highlight handler over the built-in PSI identifier highlighting while the flag is on.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 ```
@@ -544,10 +587,28 @@ Requires an SDK containing the upstream change — either the dev-channel SDK �
 
 In the sandbox IDE (experimental LSP flag ON, project SDK = the new dev SDK): open a Dart file with
 `var a = ''; print(int.parse('1'));` — expect a `String` type hint after `a` and a `radix:`-style
-parameter-name situation on calls with positional args (e.g. `name:` hints). Verify closing labels
-still render, and that an old SDK (< `INLAY_HINTS_MIN_SDK`) shows no hints and logs no errors.
+parameter-name situation on calls with positional args (e.g. `name:` hints). Verify all
+migrate-das-to-lsp checklist cases:
 
-- [ ] **Step 7: Commit, push, open PR**
+- a file already open at IDE startup AND a file opened afterwards,
+- an external file (`.pub-cache` dependency and a `dart:` SDK library),
+- closing labels still render alongside the new hints (no duplication),
+- toggling the setting off removes the hints cleanly; an old SDK (< `INLAY_HINTS_MIN_SDK`) shows
+  no hints and logs no errors in `idea.log`.
+
+Capture screenshots of the hints for the PR description.
+
+- [ ] **Step 7: Plugin verifier + repository code review**
+
+```bash
+./gradlew verifyPlugin
+```
+
+Run `third_party/tool/update_baselines.sh` only if verifier baselines changed. Then run the
+`.agents/skills/code-review/SKILL.md` protocol on `git diff main...HEAD` (all passes, against
+`.gemini/styleguide.md`) and fix every `[MUST-FIX]`/`[CONCERN]` finding.
+
+- [ ] **Step 8: Commit, push, open PR**
 
 ```bash
 git add -A && git commit -m "Show LSP inlay hints for Dart as an experimental feature
@@ -563,6 +624,8 @@ gh pr create --repo flutter/dart-intellij-third-party --base main \
   --body "Implements #159 via the LSP bridge: the Dart Analysis Server's inlay hints (variable types, parameter names, return types, type arguments, dot-shorthand types) render through the bundled LSP client. Gated by the experimental-LSP setting plus \`MIN_LSP_INLAY_HINTS_SDK_VERSION\` (the SDK gained \`textDocument/inlayHint\` over LSP-over-Legacy in dart-lang/sdk#NNNNN).
 
 Trade-offs (documented in the design doc): hint categories follow server defaults — no per-category settings UI yet (\`workspace/didChangeConfiguration\` is not available over the legacy protocol); labels truncate at 42 chars (framework default). Closing labels are unaffected.
+
+Per the migrate-das-to-lsp skill: there is no legacy provider to gate — inlay hints are a new feature (closing labels are a separate mechanism and keep working unchanged).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 ```
