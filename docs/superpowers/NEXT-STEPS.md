@@ -59,17 +59,18 @@
   `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>`-Trailer. Autor und Committer sind jetzt
   überall `Ralph Bergmann <ralph@dasralph.de>`, alle Co-Author-Trailer sind entfernt, die
   ursprünglichen Autor-Daten (2026-07-30) und die Dateiinhalte unverändert.
-- **Worktrees der gemergten PRs entfernt** (`lsp-document-highlight`,
-  `rename-closing-labels-provider`) samt der beiden lokalen Branches. Vorher verifiziert: die
-  Branch-Tips `088ae11f` / `cd9c4174` waren exakt die Head-SHAs der gemergten PRs #552 / #551, es
-  ging also nichts verloren. Der SDD-Workspace bleibt bis Teil 3 fertig ist.
+- **Branches der gemergten PRs restlos entfernt**: Worktrees, lokale Branches und die
+  Fork-Branches `lsp-document-highlight` / `rename-closing-labels-provider`. Vorher verifiziert:
+  die Tips `088ae11f` / `cd9c4174` waren exakt die Head-SHAs der gemergten PRs #552 / #551. Beide
+  PRs wurden squash-gemergt (`d3d9e7bf` / `434c86f6`), die Original-SHAs stehen also nicht in
+  `main`, bleiben aber über die PRs auf GitHub einsehbar. Der SDD-Workspace bleibt bis Teil 3
+  fertig ist.
+- Branch nach dem History-Rewrite mit `--force-with-lease` gepusht; `origin/DartInlayHints` und
+  lokal sind wieder synchron. Im Fork liegen jetzt nur noch `DartInlayHints` und `main`.
 
 ## Offene Aufräumpunkte
 
-- **`origin/DartInlayHints` ist nach dem Rebase divergiert** (Remote steht noch auf `692cc358`) →
-  nächster Push muss `--force-with-lease` sein.
-- Die Remote-Branches `origin/lsp-document-highlight` und `origin/rename-closing-labels-provider`
-  liegen noch im Fork; können nach Belieben gelöscht werden.
+- Keine — der nächste Schritt ist inhaltlich (SDK-P1, siehe oben).
 - 2026.2-EAP-Inkompatibilität (`PsiTreeElementBase` weg, Structure View) als eigenes Issue/Fix —
   betrifft `main`, nicht unsere PRs.
 - `gradlew.bat`-Zeilenenden-Normalisierung als Upstream-Housekeeping.
