@@ -18,17 +18,18 @@
 
 ## Als Nächstes
 
-1. **SDK-Prerequisites (P1/P2), im `../sdk`-Checkout:**
+1. **SDK-Prerequisites (P1/P2)** im Checkout `~/development/projects/privat/dart-sdk/sdk`:
    - P1: `InlayHintHandler` als Shared Handler — Anleitung: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`.
      Bestätigt am 2026-08-17: die Änderung steht noch aus, und es gibt noch **kein** SDK-Issue dafür
      (Step 0 der Anleitung ist also weiterhin nötig).
-   - ⚠️ `../sdk` ist ein **plain git clone ohne gclient/depot_tools**. `CONTRIBUTING.md` sagt
-     ausdrücklich, dass ein reiner `git clone` keine funktionsfähige Umgebung ergibt → für Tests
-     (Step 5) erst `gclient`-Setup (zieht viele GB; Plattenplatz prüfen). Als dokumentierte
-     Alternative zum Gerrit-Upload akzeptiert das Repo GitHub-PRs, die ein copybara-Bot in CLs
-     umwandelt.
+   - ✅ **Umgebung steht und ist verifiziert** (2026-08-17): echter `gclient`-Checkout via
+     `fetch dart`, `origin` = `https://dart.googlesource.com/sdk.git` (Gerrit), zusätzlich Remote
+     `fork` für den copybara-Weg, repo-lokal `user.email = ralph@dasralph.de`, depot_tools im PATH.
+     **Ein SDK-Build ist nicht nötig**: `./tools/sdks/dart-sdk/bin/dart test
+     pkg/analysis_server/test/lsp_over_legacy/document_highlights_test.dart` lief in ~14 s grün.
+     Details stehen im Abschnitt „Environment" der Handoff-Datei.
    - P2: nach Landung erste Dev-Version bestimmen:
-     `git -C ../sdk tag --contains <sha> | sort -V | head -1` → Wert für `MIN_LSP_INLAY_HINTS_SDK_VERSION`.
+     `git -C ../dart-sdk/sdk tag --contains <sha> | sort -V | head -1` → Wert für `MIN_LSP_INLAY_HINTS_SDK_VERSION`.
      Präzedenz im Plugin: `MIN_LSP_NAVIGATION_SDK_VERSION = "3.14.0-65.0.dev"`
      (`DartAnalysisServerService.java:184`) und `MIN_LSP_DIAGNOSTIC_SERVER_SDK_VERSION = "3.13.0-106.0.dev"`
      (`AnalysisServerDiagnosticsAction.java:27`).

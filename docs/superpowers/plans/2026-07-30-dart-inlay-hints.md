@@ -397,12 +397,13 @@ Then replace `#PR` in the CHANGELOG entry with the created PR number and
 
 # Part 3 — PR "Inlay hints via LSP" (branch `lsp-inlay-hints`)
 
-**Prerequisites (external, done by Ralph in the `../sdk` checkout):**
+**Prerequisites (external, done by Ralph in the SDK checkout at `../dart-sdk/sdk`):**
 
 - P1: The SDK change from `docs/superpowers/plans/2026-07-30-sdk-share-inlay-hint-handler.md`
-  has landed on dart-lang/sdk `main`.
+  has landed on dart-lang/sdk `main`. That document's "Environment" section describes the verified
+  working checkout (a real `gclient` checkout; no SDK build needed to run its tests).
 - P2: The first dev version tag containing it is known
-  (`git -C ../sdk tag --contains <sha> | sort -V | head -1`, format `3.14.0-NNN.0.dev`).
+  (`git -C ../dart-sdk/sdk tag --contains <sha> | sort -V | head -1`, format `3.14.0-NNN.0.dev`).
   This value is referred to as `INLAY_HINTS_MIN_SDK` below.
 
 Tasks 3.1 can be implemented and reviewed before P1/P2; the PR must not merge before P2 fills in
@@ -588,7 +589,9 @@ Under `## Unreleased` / `### Added`:
 - [ ] **Step 6: End-to-end verification**
 
 Requires an SDK containing the upstream change — either the dev-channel SDK ≥ `INLAY_HINTS_MIN_SDK`
-(https://dart.dev/get-dart/archive, dev channel) or a locally built `../sdk` with the patch.
+(https://dart.dev/get-dart/archive, dev channel) or an SDK built from `../dart-sdk/sdk` with the
+patch applied (`./tools/build.py --mode release create_sdk`; unlike running the analyzer tests,
+this end-to-end step really does need a build).
 
 ```bash
 ./gradlew clean prepareSandbox --no-build-cache && ./gradlew runIde
