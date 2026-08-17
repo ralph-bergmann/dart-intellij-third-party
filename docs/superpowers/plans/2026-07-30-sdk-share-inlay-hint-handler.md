@@ -40,7 +40,9 @@ work through something new.
 
 * The conversion described here has **not** been done yet — `InlayHintHandler` is still an
   LSP-only handler on `dart-lang/sdk` main.
-* No `dart-lang/sdk` issue asking for this exists yet, so **Step 0 is still required**.
+* **Step 0 is done:** the upstream issue is
+  [dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061), filed 2026-08-17 by
+  `ralph-bergmann`. Start at Step 1.
 * On the plugin side, Parts 1 and 2 of the inlay-hints plan have shipped:
   [#551](https://github.com/flutter/dart-intellij-third-party/pull/551) and
   [#552](https://github.com/flutter/dart-intellij-third-party/pull/552), both merged 2026-08-10.
@@ -141,22 +143,12 @@ over anything in this document:
   the body, present tense, full GitHub URL for issue links, GitHub auto-close notation.
 * **`CONTRIBUTING.md`** (repo root) — CLA and the Gerrit workflow; see Step 6.
 
-## Step 0: File the GitHub issue
+## Step 0: File the GitHub issue — done
 
-**[verify]** first that no such issue has appeared in the meantime:
+The issue is **[dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061)**, filed
+2026-08-17 (before filing, a search confirmed that none of the existing "inlay" issues — #61292,
+#61841, #60145, #48972 — was about sharing the handler). Its body, for reference:
 
-```bash
-gh api -X GET search/issues --raw-field q='repo:dart-lang/sdk inlay in:title' \
-  --jq '.items[] | "\(.number) [\(.state)] \(.title)"'
-```
-
-As of 2026-08-17 the results are #61292, #61841, #60145, #48972 — none of them is about sharing the
-handler. If that is still the case, file a new issue on https://github.com/dart-lang/sdk
-(area-devexp / devexp-lsp, the labels #63884 carries). Suggested text:
-
-> **Title:** Make textDocument/inlayHint a shared handler so it's available over DTD/Legacy
->
-> **Body:**
 > Similar to #63884: `InlayHintHandler` is currently registered in
 > `InitializedLspStateMessageHandler.lspHandlerGenerators` and therefore not available to
 > LSP-over-Legacy/DTD clients.
@@ -169,7 +161,11 @@ handler. If that is still the case, file a new issue on https://github.com/dart-
 > (`requireResolvedUnit`, document versions, `lspClientConfiguration`), so this should again be a
 > trivial change of types plus a test.
 
-Record the issue number — the commit message references it (`Fixes https://…/issues/NNNNN`).
+It was filed without labels — non-members cannot set them; Dart's triage adds `area-devexp` /
+`devexp-lsp`. **Check the issue for maintainer replies before starting Step 1**: if the team
+responds with a different preference (for example a capability-negotiation mechanism instead of a
+plain type change, which is the open question DanTup raised in #63884), that answer overrides this
+document — ground rule 1.
 
 ## Step 1: Convert the handler
 
@@ -347,10 +343,10 @@ migrated to LSP.
 InlayHintHandler only uses base-server facilities, so this is a change
 of types plus a test, with no implementation changes.
 
-Fixes https://github.com/dart-lang/sdk/issues/NNNNN
+Fixes https://github.com/dart-lang/sdk/issues/64061
 ```
 
-(Replace `NNNNN` with the issue number from Step 0. `Fixes` — not `Closes` — matches `c6d728bfd33`
+(`Fixes` — not `Closes` — matches `c6d728bfd33`
 and is the more common form in `pkg/analysis_server` history: 90 vs 52 occurrences in the last 500
 commits touching that package. No `Co-Authored-By` trailer — see ground rule 6.)
 
@@ -393,8 +389,8 @@ numbers below were confirmed identical at both commits.
   line 86). `sharedHandlerGenerators` begins at line 122 and contains
   `IncomingCallHierarchyHandler.new` (147) and `InlineValueHandler.new` (148).
 * `pkg/analysis_server/test/lsp_over_legacy/` contains no `inlay_hint_test.dart`.
-* No `dart-lang/sdk` issue requests this conversion (search: `inlay in:title`, `inlayHint in:title`,
-  `"shared handler" LSP`).
+* No `dart-lang/sdk` issue requested this conversion (searches: `inlay in:title`,
+  `inlayHint in:title`, `"shared handler" LSP`) until #64061 was filed for it on 2026-08-17.
 
 **§2 — All dependencies are server-agnostic (the premise of "pure type change")**
 

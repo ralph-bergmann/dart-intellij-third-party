@@ -20,8 +20,10 @@
 
 1. **SDK-Prerequisites (P1/P2)** im Checkout `~/development/projects/privat/dart-sdk/sdk`:
    - P1: `InlayHintHandler` als Shared Handler — Anleitung: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`.
-     Bestätigt am 2026-08-17: die Änderung steht noch aus, und es gibt noch **kein** SDK-Issue dafür
-     (Step 0 der Anleitung ist also weiterhin nötig).
+     Bestätigt am 2026-08-17: die Änderung steht noch aus. Das Upstream-Issue ist angelegt —
+     [dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061) — Step 0 ist also
+     erledigt, es geht bei Step 1 los. Vorher kurz prüfen, ob die Maintainer im Issue geantwortet
+     haben.
    - ✅ **Umgebung steht und ist verifiziert** (2026-08-17): echter `gclient`-Checkout via
      `fetch dart`, `origin` = `https://dart.googlesource.com/sdk.git` (Gerrit), zusätzlich Remote
      `fork` für den copybara-Weg, repo-lokal `user.email = ralph@dasralph.de`, depot_tools im PATH.

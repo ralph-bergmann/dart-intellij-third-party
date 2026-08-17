@@ -34,7 +34,9 @@ lsp4j, existing test bases `DartBridgeLspServerTest` / `DartCodeInsightFixtureTe
 - Commits: short imperative subject. **NO `Co-Authored-By: Claude …` trailer** — Google's CLA
   bot treats co-authors as contributors and fails the check (learned on PRs #551/#552; original
   trailer instruction retracted 2026-07-30). Author/committer must be `ralph@dasralph.de`
-  (repo-local git config is set accordingly).
+  (repo-local git config is set accordingly). Stage with **explicit paths, never `git add -A`** —
+  `third_party/gradlew.bat` has CRLF line endings that `-A` pulls into the commit as a spurious
+  normalisation diff.
 - PR bodies: describe behavior + trade-offs (per the migrate-das-to-lsp skill: "Always explicitly
   document any functional differences"), reference the issues named per part, and end with
   `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
@@ -133,13 +135,11 @@ against `.gemini/styleguide.md`). Fix every `[MUST-FIX]`/`[CONCERN]` finding bef
 - [x] **Step 7: Commit, push, open PR**
 
 ```bash
-git add -A && git commit -m "Rename DartInlayHintsProvider to DartClosingLabelsInlayHintsProvider
+git add <the files listed under "Files:" for this task> && git commit -m "Rename DartInlayHintsProvider to DartClosingLabelsInlayHintsProvider
 
 The class only renders closing labels. With LSP-provided inlay hints
 coming (issue #159), the old name would be misleading. providerId
-\"dart.closing.labels\" is unchanged, so user settings are unaffected.
-
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+\"dart.closing.labels\" is unchanged, so user settings are unaffected."
 git push -u origin rename-closing-labels-provider
 gh pr create --repo flutter/dart-intellij-third-party --base main \
   --title "Rename DartInlayHintsProvider to DartClosingLabelsInlayHintsProvider" \
@@ -269,9 +269,7 @@ override fun documentHighlight(params: DocumentHighlightParams): CompletableFutu
 - [x] **Step 6: Commit**
 
 ```bash
-git add -A && git commit -m "Forward textDocument/documentHighlight in DartBridgeLspServer
-
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+git add <the files listed under "Files:" for this task> && git commit -m "Forward textDocument/documentHighlight in DartBridgeLspServer"
 ```
 
 ### Task 2.2: Enable the feature (descriptor + LspMethod + changelog)
@@ -370,14 +368,12 @@ Run `third_party/tool/update_baselines.sh` only if verifier baselines changed. T
 - [x] **Step 7: Commit, push, open PR**
 
 ```bash
-git add -A && git commit -m "Highlight read vs write occurrences via LSP documentHighlight
+git add <the files listed under "Files:" for this task> && git commit -m "Highlight read vs write occurrences via LSP documentHighlight
 
 Enables the JetBrains LSP documentHighlight feature (experimental flag):
 the Dart Analysis Server returns DocumentHighlightKind Read/Write/Text
 (dart-lang/sdk#62929), which the platform maps to the read/write caret
-colors. Older SDKs without kinds degrade to the current all-read look.
-
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+colors. Older SDKs without kinds degrade to the current all-read look."
 git push -u origin lsp-document-highlight
 gh pr create --repo flutter/dart-intellij-third-party --base main \
   --title "Highlight read vs write occurrences via LSP documentHighlight" \
@@ -505,9 +501,7 @@ override fun inlayHint(params: InlayHintParams): CompletableFuture<List<InlayHin
 
 ```bash
 ./gradlew test --tests "com.jetbrains.lang.dart.lsp.DartBridgeLspServerTest"
-git add -A && git commit -m "Forward textDocument/inlayHint in DartBridgeLspServer
-
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+git add <the files listed under "Files:" for this task> && git commit -m "Forward textDocument/inlayHint in DartBridgeLspServer"
 ```
 
 ### Task 3.2: SDK version gate + enable the feature
@@ -623,17 +617,15 @@ Run `third_party/tool/update_baselines.sh` only if verifier baselines changed. T
 - [ ] **Step 8: Commit, push, open PR**
 
 ```bash
-git add -A && git commit -m "Show LSP inlay hints for Dart as an experimental feature
+git add <the files listed under "Files:" for this task> && git commit -m "Show LSP inlay hints for Dart as an experimental feature
 
 Forwards textDocument/inlayHint through the DAS bridge and enables the
 JetBrains LSP inlay hint rendering when the experimental-LSP setting is
-on and the SDK is recent enough to serve inlayHint over LSP-over-Legacy.
-
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+on and the SDK is recent enough to serve inlayHint over LSP-over-Legacy."
 git push -u origin lsp-inlay-hints
 gh pr create --repo flutter/dart-intellij-third-party --base main \
   --title "Show LSP inlay hints for Dart as an experimental feature" \
-  --body "Implements #159 via the LSP bridge: the Dart Analysis Server's inlay hints (variable types, parameter names, return types, type arguments, dot-shorthand types) render through the bundled LSP client. Gated by the experimental-LSP setting plus \`MIN_LSP_INLAY_HINTS_SDK_VERSION\` (the SDK gained \`textDocument/inlayHint\` over LSP-over-Legacy in dart-lang/sdk#NNNNN).
+  --body "Implements #159 via the LSP bridge: the Dart Analysis Server's inlay hints (variable types, parameter names, return types, type arguments, dot-shorthand types) render through the bundled LSP client. Gated by the experimental-LSP setting plus \`MIN_LSP_INLAY_HINTS_SDK_VERSION\` (the SDK gained \`textDocument/inlayHint\` over LSP-over-Legacy in dart-lang/sdk#64061).
 
 Trade-offs (documented in the design doc): hint categories follow server defaults — no per-category settings UI yet (\`workspace/didChangeConfiguration\` is not available over the legacy protocol); labels truncate at 42 chars (framework default). Closing labels are unaffected.
 
@@ -642,7 +634,8 @@ Per the migrate-das-to-lsp skill: there is no legacy provider to gate — inlay 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 ```
 
-(Replace `NNNNN` with the SDK issue number; update `#PR` in the CHANGELOG as in Part 2.)
+(Update `#PR` in the CHANGELOG as in Part 2. The SDK issue number is already filled in:
+[dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061).)
 
 ---
 
@@ -653,4 +646,5 @@ Per the migrate-das-to-lsp skill: there is no legacy provider to gate — inlay 
 - Type consistency: `forwardRequest<T>(String, Any?, Type)` matches the existing private API;
   lsp4j overrides mirror the proven `definition(...)` pattern (Kotlin drops Java wildcards).
 - Placeholders: the only deferred value is `INLAY_HINTS_MIN_SDK`, produced by prerequisite P2 with
-  an exact procedure; `#PR`/`#NNNNN` are resolved by their own steps.
+  an exact procedure; `#PR` is resolved by its own step. The SDK issue number was filled in on
+  2026-08-17 (dart-lang/sdk#64061).
