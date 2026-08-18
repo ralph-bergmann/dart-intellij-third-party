@@ -36,9 +36,25 @@ friction, and so that nothing in this document degrades into guesswork.
 Rationale for 3 and 4: consistency. Reviewers should recognise what they read instead of having to
 work through something new.
 
+## Status (2026-08-18) — ✅ DONE
+
+* **Landed on `dart-lang/sdk` main as `7c18d1fa0e5`** ("[analysis_server] Make textDocument/inlayHint
+  a shared handler", [CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565), reviewed by
+  DanTup/bwilkerson/helin24, committed 2026-08-17 16:24 PDT; 4 files, +44/−2). Fixes sdk#64061.
+* Deviation from Step 3 worth remembering: the LoL test must call **`initializeServer()`** instead of
+  `waitForTasksFinished()` — the latter stopped setting analysis roots after `e6b5a47d49e` (found by
+  the first CQ run, fixed in patch set 3; documented in the issue comment of 2026-08-17).
+* Step 7 result: first dev tag containing the commit is **`3.14.0-139.0.dev`** (verified with
+  `git merge-base --is-ancestor`: 138 → no, 139 → yes). This is `MIN_LSP_INLAY_HINTS_SDK_VERSION`.
+* The local checkout's `HEAD` is still the CL branch commit `75e7d44de95`; run
+  `git checkout main && git pull origin main` before any new SDK work.
+* This document is kept as the **template** for future SDK handoffs (shared-handler conversions or
+  LSP-notifications-over-Legacy, see `docs/superpowers/OPEN-QUESTIONS-maintainers.md` Q3/Q5/Q9).
+  Everything below reflects the state *before* the change.
+
 ## Status (2026-08-17)
 
-* The conversion described here has **not** been done yet — `InlayHintHandler` is still an
+* The conversion described here had **not** been done yet — `InlayHintHandler` was still an
   LSP-only handler on `dart-lang/sdk` main.
 * **Step 0 is done:** the upstream issue is
   [dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061), filed 2026-08-17 by

@@ -393,6 +393,13 @@ Then replace `#PR` in the CHANGELOG entry with the created PR number and
 
 # Part 3 — PR "Inlay hints via LSP" (branch `lsp-inlay-hints`)
 
+> **Status 2026-08-18: prerequisites done, Part 3 superseded.** P1 landed as dart-lang/sdk
+> `7c18d1fa0e5` (CL 536565, fixes sdk#64061, 2026-08-17); P2: first dev tag containing it is
+> **`3.14.0-139.0.dev`** (`3.14.0-138.0.dev` does not contain it). The tasks below are carried over
+> verbatim — with the value filled in and stacked-PR mechanics added — into
+> `docs/superpowers/plans/2026-08-18-lsp-endpoint-stack-1.md` (PR A). **Execute that plan, not this
+> section.** Kept here for history only.
+
 **Prerequisites (external, done by Ralph in the SDK checkout at `../dart-sdk/sdk`):**
 
 - P1: The SDK change from `docs/superpowers/plans/2026-07-30-sdk-share-inlay-hint-handler.md`
