@@ -31,7 +31,8 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
 ## Als Nächstes
 
 1. **Review-Runden begleiten** (#617 + die Fragen):
-   - Gemini/Maintainer-Kommentare auf #617 (und ggf. Antwort auf das Follow-up-Angebot in #618) prüfen: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
+   - Gemini/Maintainer-Kommentare auf #617 prüfen — insbesondere die Antwort auf die Gating-Frage
+     (Flag behalten / nur SDK-Gate / eigene Checkbox) und ggf. auf das Follow-up-Angebot in #618: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
      bzw. `gh api repos/flutter/dart-intellij-third-party/pulls/<n>/comments`. Änderungen: eine nach der
      anderen, lokal testen, erst dann pushen (so wie heute). Antworten in Ich-Form.
    - Antworten auf die Fragen einsammeln: `gh issue view <n> --repo flutter/dart-intellij-third-party --comments`
@@ -81,6 +82,19 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   Ausnahme nur mit Owner-Freigabe.
 - **Auf GitHub als Person schreiben** („ich", nicht „wir"); PR-Änderungen eine nach der anderen, lokal
   getestet, erst dann pushen.
+- **Lessons aus helin24s #615 (2026-08-19):**
+  - *Gating:* Der experimentelle LSP-Schalter ist zum Umschalten zwischen Legacy und LSP da, nicht als
+    allgemeiner Feature-Toggle. Gibt es einen Legacy-Pfad → Flag (+ Versions-Gate, wenn der Endpoint
+    jung ist). Gibt es keinen → nur Versions-Gate, falls nötig, sonst gar kein Gate; `LspMethod`-Eintrag
+    dann mit `isExperimental = false` (wie `TYPE_DEFINITION` in #615). Für #617 als Frage gestellt
+    ([Kommentar](https://github.com/flutter/dart-intellij-third-party/pull/617#issuecomment-5345378240)):
+    Flag behalten (= einziger Aus-Schalter), nur SDK-Gate, oder SDK-Gate + eigene Dart-Checkbox.
+  - *PR-Text:* kurz wie #615 — Was/Warum in zwei Sätzen, Test-Snippet + erwartetes Ergebnis ganz oben;
+    Trade-offs (migrate-das-to-lsp-Skill) bleiben, aber knapp.
+  - *Revier:* Navigations-Familie (#539, #615 → vermutlich #396/#403/#404) macht helin24 selbst. Erst die
+    Antwort auf „was soll ich übernehmen?" (#207) abwarten, dann bauen — Fragen allein reicht nicht.
+  - *Tests:* nichts zu übernehmen — unser Umfang (Null-Ergebnis, gesendete Params) war größer; bleibt so,
+    mit `requireNotNull`.
 - Diese Regeln stehen als „Ground rules" auch am Anfang der SDK-Handoff-Doku, damit der dortige
   Agent sie ohne diesen Kontext hat.
 
