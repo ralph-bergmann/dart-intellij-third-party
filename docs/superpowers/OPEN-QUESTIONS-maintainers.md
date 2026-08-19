@@ -35,7 +35,13 @@ Stacked pull requests are a fairly new GitHub feature — public preview since 2
 ([changelog](https://github.blog/changelog/2026-07-30-stacked-pull-requests-are-now-in-public-preview/),
 [docs](https://docs.github.com/en/pull-requests/how-tos/stacked-pull-requests)): each PR targets the
 layer below it, layers are reviewed independently, and when a lower PR merges the ones above are
-rebased and retargeted automatically.
+rebased and retargeted automatically. **Update 2026-08-19:** stacks "require all branches to be in
+the same repository. Cross-fork stacks are not supported"
+([reference](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests)) — so from a
+fork only the classic dependent PR is possible (#618 targets `main` and contains #617's commits until
+#617 merges). Correction posted:
+https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5341395635 — the question
+is now whether dependent PRs are acceptable or follow-ups should wait for their predecessor.
 
 Questions:
 1. Are stacked PRs acceptable to you (review PR A first; PR B is retargeted to `main` after A merges)?
