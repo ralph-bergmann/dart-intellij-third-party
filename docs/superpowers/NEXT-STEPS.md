@@ -1,89 +1,56 @@
-# Nächste Schritte (Stand: 2026-08-19, nachmittags)
+# Nächste Schritte (Stand: 2026-08-19, abends)
 
-## Erledigt
+## Wo wir stehen
 
-- **Teil 1** (Rename `DartInlayHintsProvider` → `DartClosingLabelsInlayHintsProvider`):
-  [PR #551](https://github.com/flutter/dart-intellij-third-party/pull/551) — **gemergt 2026-08-10**
-  (`434c86f6`).
-- **Teil 2** (LSP Read/Write-Highlighting): [PR #552](https://github.com/flutter/dart-intellij-third-party/pull/552)
-  — **gemergt 2026-08-10** (`d3d9e7bf`). Ist bereits in Release 508.1.0.
-- **SDK-Prerequisites für Teil 3 sind erledigt (2026-08-17):** der CL ist gelandet —
-  dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565),
-  schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)). Erster Dev-Tag, der den Commit
-  enthält: **`3.14.0-139.0.dev`** (138 enthält ihn nicht) → das ist `MIN_LSP_INLAY_HINTS_SDK_VERSION`.
-  Handoff-Doku `plans/2026-07-30-sdk-share-inlay-hint-handler.md` ist auf „DONE" gesetzt und bleibt
-  als Vorlage für künftige SDK-Aufgaben. Achtung: der SDK-Checkout steht noch auf dem lokalen
-  CL-Branch (`75e7d44de95`) — vor neuer SDK-Arbeit `git checkout main && git pull origin main`.
-- **Scope-Analyse zu #207 (2026-08-18):** `specs/2026-08-18-lsp-migration-scope-analysis.md` —
-  alle 16 offenen Sub-Issues von #207 klassifiziert (drei Gruppen, PR-Stack-Zuordnung, Belege im
-  Anhang). Kernaussagen:
-  - **Jetzt umsetzbar (Stack 1):** Inlay Hints (#159, Teil 3) + Go To Type Declaration (#580) — beide
-    reine „Endpoint einschalten"-Änderungen ohne Legacy-Gating.
-  - **Erst Maintainer fragen:** Find Usages #396 (PSI-vs-LSP-Target-Popup), Usage Count (DanTup
-    lehnt eine Server-Codelens ab → IDE-seitiger Provider?), Closing Labels #400 (SDK sendet
-    `publishClosingLabels` nicht über LSP-over-Legacy → Opt-in-Mechanismus fehlt), Outline #402,
-    Hierarchie #403, Implementations #404, Completion #399, Semantic Tokens #401, Rename #407,
-    Postfix/Complete-Statement #405/#406 (kein LSP-Protokoll).
-  - **Nicht meine (Ralph):** codeAction #520 (helin24, PR #526), publishDiagnostics PR #612 (+ #441),
-    setClientCapabilities PR #614, Analytics #374/#385, DAP #479.
-- **Fragenkatalog** `OPEN-QUESTIONS-maintainers.md` (Q0–Q13, zum Einfügen in die Issues). Q13 und
-  die Ergänzungen in Q3/Q4/Q8/Q9/Q12 decken die Server-Optionen aus
-  `pkg/analysis_server/tool/lsp_spec/README.md` ab (Initialization Options wie `closingLabels`/
-  `outline`, `dart.*`-Konfiguration wie `renameFilesWithClasses`, `inlayHints`-Kategorien) — beides
-  ist über LSP-over-Legacy nicht erreichbar, daher zwei Fragen: SDK-Transportweg und IntelliJ-Settings-UI.
-- **Plan für Stack 1** `plans/2026-08-18-lsp-endpoint-stack-1.md` (ersetzt Teil 3 des alten Plans;
-  PR A = Inlay Hints auf `main`, PR B = typeDefinition gestapelt auf PR A).
+| Was | Stand |
+|---|---|
+| Teil 1 — Rename `DartInlayHintsProvider` → `DartClosingLabelsInlayHintsProvider` | ✅ [#551](https://github.com/flutter/dart-intellij-third-party/pull/551), gemergt 2026-08-10 (`434c86f6`) |
+| Teil 2 — LSP Read/Write-Highlighting | ✅ [#552](https://github.com/flutter/dart-intellij-third-party/pull/552), gemergt 2026-08-10 (`d3d9e7bf`), in Release 508.1.0 |
+| SDK: `textDocument/inlayHint` als Shared Handler | ✅ dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565), schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)); erster Dev-Tag **`3.14.0-139.0.dev`** = `MIN_LSP_INLAY_HINTS_SDK_VERSION` |
+| Teil 3 — LSP Inlay Hints (#159) | 🟡 [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) **Ready for review** (Branch `lsp-inlay-hints` = `20b85b64`, 4 Commits auf upstream `main` `fb835401`) |
+| Go to Type Declaration (#580) | 🟡 [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) **Ready for review** (Branch `lsp-type-definition` = `7519c92d`, 5 Commits auf `main`, unabhängig von #617) |
+| Scope-Analyse #207 + Fragenkatalog | ✅ `specs/2026-08-18-lsp-migration-scope-analysis.md`, `OPEN-QUESTIONS-maintainers.md` (Q0–Q13); alle Fragen am 2026-08-18 gepostet, Stacked-PR-Frage am 2026-08-19 zurückgezogen |
+
+Beide PRs sind durch: Unit-Tests (`com.jetbrains.lang.dart.lsp.*`), `verifyPlugin` (keine neuen
+Baseline-Zeilen, die auf die Änderungen zurückgehen), Repo-Code-Review-Skill (0 MUST-FIX), Final-Review
+mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
+
+- **#617:** mit Flutter `master` (Dart 3.14.0-143.0.dev) alle Hint-Kategorien sichtbar, Closing Labels
+  daneben ohne Doppelung (bleiben auch bei Flag aus), Toggle an/aus, Scratch-Datei analysiert und
+  gehintet, Hints nach IDE-Start sobald „Analyzing…" fertig ist, Flutter `stable` (Dart 3.13.0) → keine
+  Hints (Versions-Gate), `idea.log` ohne ERROR und ohne `inlayHint failed`. Kein Screenshot im PR (der
+  getestete Code ist nicht veröffentlichbar; das Snippet im PR-Text reproduziert es). Im PR-Text steht
+  ausdrücklich: Feature ist per Default an (Schalter defaultet auf `true`), alle Kategorien, kein eigener
+  Aus-Schalter — die Maintainer sollen das bewusst absegnen.
+- **#618:** Flag an → ⌃⇧B springt zum Typ (auch in `.pub-cache`, z. B. `GoRouter`), Flag aus → nichts
+  (Altverhalten), Log sauber. Seit `7519c92d` mappt die Bridge alle Antwortformen (`[LocationLink…]`,
+  `[Location…]`, nacktes `Location`, `null`/`[]`) — **nicht mehr von #614 abhängig**; Task 5 des Plans
+  (`typeDefinition.linkSupport` in `buildLspCapabilities`) ist nur noch optionale Parität mit `definition`.
 
 ## Als Nächstes
 
-1. ✅ **Fragen sind gepostet (2026-08-18, 13 Kommentare, alle in Ich-Form):** zwei auf #207
-   (Scope/Stacked PRs/Usage Count/untracked Endpoints; Server-Optionen & Settings-UI, cc DanTup) und
-   je einer auf #396, #400 (cc DanTup), #402, #401, #403, #404, #399, #407, #405, #406, #441 — Links
-   stehen in den Überschriften von `OPEN-QUESTIONS-maintainers.md`. **Jetzt: Antworten abwarten**,
-   regelmäßig `gh issue view <n> --repo flutter/dart-intellij-third-party --comments` prüfen und die
-   Antworten in `OPEN-QUESTIONS-maintainers.md` eintragen (✅ + Datum + Kurzfassung). Bei einem „ja“ zu
-   Q3 folgt ein dart-lang/sdk-Issue (Vorlage: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`).
-2. ✅ **Stack 1 ist implementiert und als zwei Draft-PRs offen (2026-08-19):**
-   - **PR A** [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) „Show LSP inlay
-     hints for Dart as an experimental feature" — Branch `lsp-inlay-hints` (`1826e3cc`, 3 Commits auf
-     upstream `main` `fb835401`). Tasks 1–3 erledigt inkl. Verifier (keine neuen Baseline-Zeilen),
-     Repo-Code-Review (0 MUST-FIX), Final-Review + Fix-Wave (Fehlerantworten von DAS für
-     `textDocument/inlayHint` werden jetzt zu „keine Hints" + Info-Log statt IDE-Fehler, weil der
-     Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt). Gemini-Review 2026-08-19: `!!` in den
-     neuen Tests → `requireNotNull` (`20b85b64`, gepusht); Null-Concern war schon abgedeckt
-     (geantwortet). **Offen: der manuelle Sandbox-Check (Task 3 Step 1)** mit einem Dev-SDK
-     ≥ 3.14.0-139.0.dev (Flutter-SDKs sind zu alt; Dev-Zip von dart.dev/get-dart/archive, Dev channel)
-     — **erledigt 2026-08-19 mit Flutter `master` (Dart 3.14.0-143.0.dev):** alle Hint-Kategorien sichtbar,
-     Closing Labels daneben ohne Doppelung (bleiben auch bei Flag aus), Toggle an/aus ok, Scratch-Datei
-     wird analysiert und gehintet, Hints nach IDE-Start sobald „Analyzing…" fertig ist, Flutter `stable`
-     (Dart 3.13.0) → keine Hints (Versions-Gate), idea.log ohne ERROR und ohne `inlayHint failed`-Zeile.
-     Bonus: ⌘+Klick auf einen Typ-Hint navigiert zum Typ. Screenshot: `docs/SCR-20260819-qcsg.png`
-     (nicht committen — per Drag & Drop in die PR-Beschreibung; dann Draft aufheben = Ralph).
-     Im PR-Body steht explizit: Feature ist per Default an (experimenteller
-     LSP-Schalter defaultet auf `true`), alle Kategorien, kein eigener Aus-Schalter — Maintainer
-     sollen sagen, ob sie das so wollen.
-   - **PR B** [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) „Go to Type
-     Declaration via LSP typeDefinition" — Branch `lsp-type-definition` (`7519c92d`, 5 Commits direkt
-     auf `main`, **unabhängig von A**). **Nicht mehr auf #614 blockiert:** seit `7519c92d` mappt die
-     Bridge alle Antwortformen (`[LocationLink…]`, `[Location…]`, nacktes `Location`, `null`/`[]`), d. h.
-     Go to Type Declaration funktioniert ohne `linkSupport`. Task 5 (`typeDefinition.linkSupport` in
-     `buildLspCapabilities`) ist damit **optional** (Parität mit `definition`, liefert nur die
-     Origin-Range) — wenn überhaupt, erst nach #614. **Sandbox 2026-08-19 (Ralph, Flutter-Projekt):**
-     Flag an → ⌃⇧B springt zum Typ (auch `.pub-cache`, `GoRouter`), Flag aus → nichts, Log sauber.
-     **Ready for review seit 2026-08-19 (von Ralph umgestellt)**; Gemini-Antworten gepostet, nächste
-     Gemini-/Maintainer-Runde abwarten.
-   - **Stacked PRs sind für uns (Fork → Upstream) nicht möglich** — Trunk und Layer-Branches müssen im
-     selben Repo liegen („Cross-fork stacks are not supported"; github/gh-stack#46 = Fork-Support steht
-     bei GitHub auf der Roadmap; `gh pr create --base <Fork-Branch>` gegen upstream scheitert mit
-     „Base ref must be a branch"). Frage auf #207 zurückgezogen (Punkt 1 durchgestrichen, Korrektur-
-     Kommentar umgeschrieben). Falls GitHub Fork-Stacks nachliefert: gh-stack#46 beobachten.
-   - Worktree: `.claude/worktrees/lsp-inlay-hints` (aktuell auf `lsp-type-definition`). SDD-Ledger:
-     `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` (bleibt bis Task 5 + Sandbox
-     erledigt sind). Sandbox-Fallstricke: Projektgedächtnis `lsp-feature-testing`.
-   - Beim Rebase nach #612 (publishDiagnostics) aufpassen: berührt `DartBridgeLspServer(.kt/Test.kt)`.
-3. **Nach den Antworten:** Stack 2 („Navigation family": #396, ggf. #404/#403) bzw. Stack 3
-   („Push-Notifications über LoL": #400, #402) planen — jeweils zuerst SDK-Issue/CL, dann Plugin.
-   Für SDK-Änderungen die Handoff-Vorlage `plans/2026-07-30-sdk-share-inlay-hint-handler.md` kopieren.
+1. **Review-Runden begleiten** (beide PRs + die Fragen):
+   - Gemini/Maintainer-Kommentare auf #617/#618 prüfen: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
+     bzw. `gh api repos/flutter/dart-intellij-third-party/pulls/<n>/comments`. Änderungen: eine nach der
+     anderen, lokal testen, erst dann pushen (so wie heute). Antworten in Ich-Form.
+   - Antworten auf die Fragen einsammeln: `gh issue view <n> --repo flutter/dart-intellij-third-party --comments`
+     für #207, #396, #400, #402, #401, #403, #404, #399, #407, #405, #406, #441; Ergebnis in
+     `OPEN-QUESTIONS-maintainers.md` eintragen (✅ + Datum + Kurzfassung). Bei „ja" zu Q3 (Closing Labels)
+     ein dart-lang/sdk-Issue aufmachen (Vorlage: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`).
+   - Wenn einer der PRs gemergt ist: den anderen auf `main` rebasen (textuelle Überlappung in
+     `DartBridgeLspServer.kt`, `LspMethod.kt`, `DartLspServerDescriptor.kt`, `CHANGELOG.md`, Test-Datei).
+     Ebenso nach helin24s #612/#614 (beide berühren `DartBridgeLspServer(.kt/Test.kt)`).
+2. **Nach den Antworten planen:** Stack 2 („Navigation family": #396, ggf. #404/#403) bzw. Stack 3
+   („Push-Notifications über LSP-over-Legacy": #400, #402) — jeweils zuerst SDK-Issue/CL, dann Plugin;
+   für SDK-Änderungen die Handoff-Vorlage kopieren. Da Stacked PRs aus einem Fork nicht gehen
+   (github/gh-stack#46), bleibt es bei max. zwei unabhängigen PRs gleichzeitig.
+3. **Arbeitsumgebung:** Worktree `.claude/worktrees/lsp-inlay-hints` (steht auf `lsp-inlay-hints`;
+   für #618 `git checkout lsp-type-definition`) und SDD-Ledger
+   `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` bleiben, bis beide PRs gemergt sind.
+   Sandbox-Log: `<Worktree>/third_party/.intellijPlatform/sandbox/Dart/IU-2026.1.3/log/idea.log`.
+   Dev-SDK für Inlay-Hint-Tests: `/Users/ralph.bergmann/development/sdks/flutter/bin/cache/dart-sdk`
+   (Flutter `master`). SDK-Checkout `~/development/projects/privat/dart-sdk/sdk` steht noch auf dem
+   lokalen CL-Branch (`75e7d44de95`) — vor neuer SDK-Arbeit `git checkout main && git pull origin main`.
 
 ## Regeln (gelten für Plugin **und** SDK-Arbeit)
 
@@ -103,49 +70,37 @@
   `DartBridgeLspServerTest.setUp`), `?.`, `?:` oder `if (x != null)`. Pläne dürfen keine Ausnahme
   „für Testcode" mehr formulieren; ein vorhandenes `!!` im Umfeld wird nicht kopiert, sondern ist ein
   Follow-up-Kandidat (requireNotNull-Sweep).
-- **Max. zwei offene PRs.** Stacked PRs gehen aus einem Fork nicht (siehe oben), also unabhängige PRs;
-  wer als Zweiter gemergt wird, rebased trivial.
+- **Max. zwei offene PRs.** Stacked PRs gehen aus einem Fork nicht („Cross-fork stacks are not
+  supported", github/gh-stack#46), also unabhängige PRs; wer als Zweiter gemergt wird, rebased trivial.
 - Nichts unter `third_party/thirdPartySrc/` ändern (Code-Review-Skill des Repos → `[MUST-FIX]`);
-  Ausnahme nur mit Owner-Freigabe (siehe Plan Task 5 Fallback).
+  Ausnahme nur mit Owner-Freigabe.
+- **Auf GitHub als Person schreiben** („ich", nicht „wir"); PR-Änderungen eine nach der anderen, lokal
+  getestet, erst dann pushen.
 - Diese Regeln stehen als „Ground rules" auch am Anfang der SDK-Handoff-Doku, damit der dortige
   Agent sie ohne diesen Kontext hat.
 
-## Am 2026-08-18 erledigt (Session-Log)
+## Offene Aufräumpunkte (nicht dringend)
 
-- SDK-Checkout gefetcht (`origin/main` = `00c42422917`), Landung des CL und ersten Dev-Tag verifiziert.
-- Issue #207 samt aller 27 Sub-Issues (16 offen) und der Kommentare gelesen; helin24s Draft-PRs
-  #526/#612/#614 (Dateilisten) und die gemergten #539/#552 als Muster ausgewertet.
-- SDK-Handler-Listen (`handler_states.dart` bei `origin/main`, 3.3.0, 3.5.0) und den
-  publishDiagnostics-Präzedenzfall `d42063aac44` (sdk#64021) analysiert.
-- Plattform-Verhalten in den IntelliJ-Community-Quellen verifiziert (Implicit-Reference-Vorrang bei
-  Go-to-(Type-)Declaration; Find-Usages-Target-Popup bei PSI + LSP; Hierarchy-Provider-Vorrang).
-- Vier Dokumente geschrieben/aktualisiert (Spec, Fragen, Plan Stack 1, Status in den alten Plänen).
-- Alle Fragen auf GitHub gepostet (als ralph-bergmann, Wortlaut für GitHub angepasst: Ich-Form, keine
-  internen Verweise; Querverweise zeigen auf die jeweiligen Kommentare). Q0 enthält jetzt den Hinweis,
-  dass Stacked PRs seit 2026-07-30 in Public Preview sind (GitHub-Changelog + Docs-Link).
-- Nachtrag auf Ralphs Hinweis: `pkg/analysis_server/tool/lsp_spec/README.md` (bei `origin/main`)
-  ausgewertet — Initialization Options, `dart.*`-Konfiguration, Method-Status-Tabelle, Client
-  Commands (`dart.goToLocation`) — und als Q13 plus Ergänzungen in Q2/Q3/Q4/Q8/Q9/Q12 eingearbeitet;
-  Spec §2.1/§7/§10 entsprechend erweitert.
-- `.gitignore` (+`.idea`) hat Ralph selbst committet (`5c4c5977`).
-- 2026-08-19: Fork-`main` auf upstream `fb835401` fast-forwarded; Stack 1 per
-  subagent-driven-development umgesetzt (Implementer/Reviewer-Subagenten, Final-Review, Fix-Wave);
-  beide PRs als Draft geöffnet; Kommentare/Korrektur auf #207 gepostet.
-- 2026-08-19 nachmittags: #618 auf `main` entstapelt (Rebase ohne A's Commits, 10/10 Tests,
-  Force-Push), PR-Texte #617/#618 angepasst, Stacked-PR-Frage auf #207 zurückgezogen (Belege:
-  Docs-Referenz, gh-stack#46, eigener Fehlversuch).
-- 2026-08-19 abends: drei Gemini-Kommentare abgearbeitet (`!!`→`requireNotNull` in #617 und #618;
-  typeDefinition akzeptiert jetzt auch `Location`-Antworten → #618 unabhängig von #614), Sandbox-Test
-  für Go to Type Declaration zusammen mit Ralph, beide Branches gepusht, Gemini geantwortet, #618-Text
-  angepasst. `!!`-Regel in NEXT-STEPS/Plan/Memory verschärft (gilt auch für Tests).
-
-## Offene Aufräumpunkte
-
+- `requireNotNull`-Sweep über die vorbestehenden `!!` in `DartBridgeLspServerTest`
+  (`testDiagnosticServerRequest`, `testDocumentHighlightRequest`) als kleiner eigener PR — Gemini
+  gegenüber auf #617 angeboten.
 - 2026.2-EAP-Inkompatibilität (`PsiTreeElementBase` weg, Structure View) als eigenes Issue/Fix —
-  betrifft `main`, nicht meine PRs (und wäre durch #402/documentSymbol mittelfristig obsolet).
+  betrifft `main`, nicht meine PRs (würde durch #402/documentSymbol mittelfristig obsolet).
 - `gradlew.bat`-Zeilenenden-Normalisierung als Upstream-Housekeeping.
-- Follow-up-Ideen aus den Reviews: `requireNotNull`-Sweep in `DartBridgeLspServerTest`,
-  TypeToken-Import-Konsolidierung (inzwischen importiert, s. `documentHighlight`), ggf. Versions-Gate
-  für documentHighlight analog `isLspNavigationEnabled`.
-- Branch `DartInlayHints` nach den heutigen Commits noch **nicht gepusht** (`origin/DartInlayHints`
-  hinkt hinterher) — bei Gelegenheit `git push` (Fast-Forward, kein Force nötig).
+- Ggf. Versions-Gate für documentHighlight analog `isLspNavigationEnabled` (Review-Idee aus #552).
+- `docs/SCR-20260819-qcsg.png` liegt unversioniert im Planungs-Checkout (nicht committen; nicht
+  veröffentlichbar).
+
+## Verlauf (Kurzfassung)
+
+- 2026-08-17: SDK-CL für Shared InlayHintHandler hochgeladen und gelandet; Branch `DartInlayHints`
+  rebased, CLA-Hygiene auf allen Commits.
+- 2026-08-18: Scope-Analyse #207 (16 offene Sub-Issues, drei Gruppen), Fragenkatalog Q0–Q13 (inkl.
+  Server-Optionen aus `pkg/analysis_server/tool/lsp_spec/README.md`), Plan Stack 1; alle Fragen gepostet.
+- 2026-08-19: Fork-`main` auf upstream `fb835401`; Stack 1 per subagent-driven-development umgesetzt
+  (Implementer/Reviewer-Subagenten, Final-Review, Fix-Wave: DAS-Fehler bei `inlayHint` → „keine Hints"
+  + Info-Log, weil der Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt); beide PRs als Draft
+  geöffnet; GitHub-Stacks scheitern aus dem Fork → #618 auf `main` entstapelt, Frage auf #207
+  zurückgezogen; Gemini-Runde 1 abgearbeitet (`!!`→`requireNotNull`; `typeDefinition` akzeptiert
+  `Location`-Antworten → #618 unabhängig von #614); Sandbox-Checks für beide PRs mit Ralph; beide
+  PRs auf „Ready for review".
