@@ -27,7 +27,7 @@ question is Q13; the per-feature questions reference the options that matter for
 
 ---
 
-## Q0 — Process: stacked PRs and what to pick up 💬 [asked on #207, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321190)
+## Q0 — Process: ~~stacked PRs~~ (withdrawn 2026-08-19) and what to pick up 💬 [asked on #207, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321190)
 
 Context: the repo allows two open PRs per external contributor; I want to submit closely related
 changes as *stacked* PRs (PR B based on PR A's branch) so that one review covers one pattern.
@@ -35,13 +35,15 @@ Stacked pull requests are a fairly new GitHub feature — public preview since 2
 ([changelog](https://github.blog/changelog/2026-07-30-stacked-pull-requests-are-now-in-public-preview/),
 [docs](https://docs.github.com/en/pull-requests/how-tos/stacked-pull-requests)): each PR targets the
 layer below it, layers are reviewed independently, and when a lower PR merges the ones above are
-rebased and retargeted automatically. **Update 2026-08-19:** stacks "require all branches to be in
-the same repository. Cross-fork stacks are not supported"
-([reference](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests)) — so from a
-fork only the classic dependent PR is possible (#618 targets `main` and contains #617's commits until
-#617 merges). Correction posted:
-https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5341395635 — the question
-is now whether dependent PRs are acceptable or follow-ups should wait for their predecessor.
+rebased and retargeted automatically. **Update 2026-08-19 — stacked-PR question withdrawn.** GitHub stacks do not support the fork → upstream
+case yet: the reference docs say "Cross-fork stacks are not supported", github/gh-stack#46 ("FR: support
+for cross-fork stacked PRs", open, GitHub: "on our roadmap") describes exactly the fork-contained stack
+targeting the original repo as *future* work, and `gh pr create --base <fork branch>` against upstream
+fails with "Base ref must be a branch" (the base branch must live in the base repository). #618 was
+therefore rebased onto `main`; #617 and #618 are independent PRs (textual overlap only). Both #207
+comments were edited accordingly (point 1 struck through; correction comment
+https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5341395635 rewritten). Only
+question 2 (what to take) remains open.
 
 Questions:
 1. Are stacked PRs acceptable to you (review PR A first; PR B is retargeted to `main` after A merges)?

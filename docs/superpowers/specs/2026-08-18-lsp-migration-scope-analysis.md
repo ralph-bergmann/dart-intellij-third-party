@@ -179,7 +179,7 @@ statement, #407 rename (dialog + preview), #520 code actions.
 
 | # | Decision | Rationale (evidence) |
 |---|---|---|
-| S1 | **Implement now — Stack 1:** PR A = inlay hints (Part 3 of the 2026-07-30 plan, `MIN_LSP_INLAY_HINTS_SDK_VERSION = "3.14.0-139.0.dev"`), PR B = `textDocument/typeDefinition` (#580) stacked on PR A. | Both are the proven 4-file pattern (bridge override + capability + `LspMethod` + customizer), no SDK work left, no legacy code to gate, no PSI arbitration problem (§2.3). Identical shape → reviewers see one pattern; stacking keeps Ralph at ≤ 2 open PRs. |
+| S1 | **Implement now — Stack 1:** PR A = inlay hints (Part 3 of the 2026-07-30 plan, `MIN_LSP_INLAY_HINTS_SDK_VERSION = "3.14.0-139.0.dev"`), PR B = `textDocument/typeDefinition` (#580) — originally stacked on PR A; since 2026-08-19 an independent PR (see §6 note). | Both are the proven 4-file pattern (bridge override + capability + `LspMethod` + customizer), no SDK work left, no legacy code to gate, no PSI arbitration problem (§2.3). Identical shape → reviewers see one pattern; stacking keeps Ralph at ≤ 2 open PRs. |
 | S2 | typeDefinition gets **no SDK version gate**, only the experimental flag (like hover and documentHighlight). | Shared since ≤ Dart 3.3.0; the plugin only adds `MIN_…` constants for handlers shared recently (navigation `3.14.0-65.0.dev`, diagnostic server `3.13.0-106.0.dev`, inlay hints `3.14.0-139.0.dev`). |
 | S3 | typeDefinition advertises `textDocument.typeDefinition.linkSupport = true` and deserializes `List<LocationLink>` exactly like `definition`. The capability goes into `DartAnalysisServerService.buildLspCapabilities` (introduced by helin24's #614) — PR B therefore waits for #614; if #614 dies, the only other place is `RequestUtilities.generateClientCapabilities` under `thirdPartySrc/`, which needs an explicit owner override (ask on the PR, precedent #539). | Mirrors the existing `definition` override and its comment; the SDK's `TypeDefinitionHandler` returns `Location` unless `typeDefinitionLocationLink` is set (`client_capabilities.dart:201`), and `LocationLink.originSelectionRange` is what the vendored `LspImplicitReferenceProvider` uses for the reference range. The vendored executor accepts both shapes, so this is consistency plus better highlighting, not a hard necessity. |
 | S4 | **Do not start** #396, usage count, #400, #402, #403, #404 before the maintainers answer Q1–Q7. Prepare the questions so that they can be pasted into the issues. | Each has an unresolved design point (PSI arbitration, SDK opt-in protocol, UI ownership) — planning them now would be guessing. |
@@ -189,6 +189,14 @@ statement, #407 rename (dialog + preview), #520 code actions.
 | S8 | No new SDK handoff document now: Stack 1 needs no SDK change. Handoff docs for closing labels (Q3) or others will be written once the mechanism is agreed. | Writing them before the protocol decision would violate "nothing invented". |
 
 ## 6. Stacked-PR strategy
+
+> **Superseded 2026-08-19:** GitHub stacked PRs require the whole stack (trunk included) in one
+> repository — "Cross-fork stacks are not supported" (reference docs; github/gh-stack#46 tracks
+> fork support as future work), and a PR's base branch must exist in the base repository. From the
+> fork, PR A (#617) and PR B (#618) are therefore **independent PRs against `main`** that only overlap
+> textually; whichever merges second gets a trivial rebase. The 2-open-PR budget is unchanged. The
+> text below is kept for the record.
+
 
 * GitHub stacked PRs: PR B's `--base` is PR A's branch; after A merges, GitHub retargets B to `main`
   automatically (or Ralph retargets). Only PR A counts as "reviewable now"; B is visible with a

@@ -29,7 +29,11 @@ filled in, stacked-PR mechanics added).
 ## Global Constraints
 
 - Remotes: `origin` = `ralph-bergmann/dart-intellij-third-party` (fork). PRs target
-  `flutter/dart-intellij-third-party`; PR A base `main`, PR B base `lsp-inlay-hints` (stacked).
+  `flutter/dart-intellij-third-party`; PR A base `main`, ~~PR B base `lsp-inlay-hints` (stacked)~~
+  **2026-08-19: PR B base `main` as well** — GitHub stacks need all branches incl. the trunk in one
+  repository ("Cross-fork stacks are not supported", github/gh-stack#46), so the PRs are independent;
+  `lsp-type-definition` was rebased onto `main` (#618 = `0718d326`). Task 7 Step 4 (retarget) is N/A;
+  whichever PR merges second gets a trivial rebase.
 - Feature branches are cut from a fresh `main` (`git checkout main && git pull origin main`),
   preferably in a worktree under `.claude/worktrees/` (superpowers:using-git-worktrees). The planning
   docs (`docs/superpowers/**`) exist only on the `DartInlayHints` branch — never include them in a

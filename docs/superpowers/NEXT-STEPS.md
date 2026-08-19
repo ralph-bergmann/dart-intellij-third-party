@@ -1,4 +1,4 @@
-# Nächste Schritte (Stand: 2026-08-19)
+# Nächste Schritte (Stand: 2026-08-19, nachmittags)
 
 ## Erledigt
 
@@ -55,18 +55,19 @@
      LSP-Schalter defaultet auf `true`), alle Kategorien, kein eigener Aus-Schalter — Maintainer
      sollen sagen, ob sie das so wollen.
    - **PR B** [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) „Go to Type
-     Declaration via LSP typeDefinition" — Branch `lsp-type-definition` (`ca95e6d0`, 3 Commits auf
-     `lsp-inlay-hints`), **abhängiger PR gegen `main`** (enthält A's Commits bis A gemergt ist).
-     Tasks 4, 6, 7 (Step 2–3) erledigt. **Offen: Task 5** (`typeDefinition.linkSupport` in
-     `buildLspCapabilities` + Test) — **blockiert auf helin24s #614**; bis dahin ist das Feature
+     Declaration via LSP typeDefinition" — Branch `lsp-type-definition` (`0718d326`, 3 Commits direkt
+     auf `main`, **unabhängig von A** — nur textuelle Überlappung, wer als Zweiter gemergt wird,
+     rebased trivial). Tasks 4, 6, 7 (Step 2–3) erledigt. **Offen: Task 5** (`typeDefinition.linkSupport`
+     in `buildLspCapabilities` + Test) — **blockiert auf helin24s #614**; bis dahin ist das Feature
      nicht funktionsfähig (DAS liefert ohne linkSupport ein nacktes `Location`, der Bridge-Code
      erwartet `List<LocationLink>`) und der Code-Kommentar in `typeDefinition(...)` verweist auf das
-     noch nicht existierende `buildLspCapabilities`. Nach #614: `main` ziehen, beide Branches
-     rebasen, Task 5 committen, Sandbox-Check (Task 7 Step 1), Draft aufheben.
-   - **GitHub-Stacks gehen nicht aus einem Fork** („Cross-fork stacks are not supported",
-     [Docs](https://docs.github.com/en/pull-requests/reference/stacked-pull-requests)) — deshalb klassischer
-     abhängiger PR; Korrektur ist auf #207 gepostet
-     ([Kommentar](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5341395635)).
+     noch nicht existierende `buildLspCapabilities`. Nach #614: `main` ziehen, Branch rebasen, Task 5
+     committen, Sandbox-Check (Task 7 Step 1), Draft aufheben.
+   - **Stacked PRs sind für uns (Fork → Upstream) nicht möglich** — Trunk und Layer-Branches müssen im
+     selben Repo liegen („Cross-fork stacks are not supported"; github/gh-stack#46 = Fork-Support steht
+     bei GitHub auf der Roadmap; `gh pr create --base <Fork-Branch>` gegen upstream scheitert mit
+     „Base ref must be a branch"). Frage auf #207 zurückgezogen (Punkt 1 durchgestrichen, Korrektur-
+     Kommentar umgeschrieben). Falls GitHub Fork-Stacks nachliefert: gh-stack#46 beobachten.
    - Worktree: `.claude/worktrees/lsp-inlay-hints` (aktuell auf `lsp-type-definition`). SDD-Ledger:
      `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` (bleibt bis Task 5 + Sandbox
      erledigt sind). Sandbox-Fallstricke: Projektgedächtnis `lsp-feature-testing`.
@@ -115,6 +116,9 @@
 - 2026-08-19: Fork-`main` auf upstream `fb835401` fast-forwarded; Stack 1 per
   subagent-driven-development umgesetzt (Implementer/Reviewer-Subagenten, Final-Review, Fix-Wave);
   beide PRs als Draft geöffnet; Kommentare/Korrektur auf #207 gepostet.
+- 2026-08-19 nachmittags: #618 auf `main` entstapelt (Rebase ohne A's Commits, 10/10 Tests,
+  Force-Push), PR-Texte #617/#618 angepasst, Stacked-PR-Frage auf #207 zurückgezogen (Belege:
+  Docs-Referenz, gh-stack#46, eigener Fehlversuch).
 
 ## Offene Aufräumpunkte
 
