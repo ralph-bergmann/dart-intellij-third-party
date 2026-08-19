@@ -1,4 +1,4 @@
-# Nächste Schritte (Stand: 2026-08-19, abends)
+# Nächste Schritte (Stand: 2026-08-19, spät)
 
 ## Wo wir stehen
 
@@ -8,7 +8,7 @@
 | Teil 2 — LSP Read/Write-Highlighting | ✅ [#552](https://github.com/flutter/dart-intellij-third-party/pull/552), gemergt 2026-08-10 (`d3d9e7bf`), in Release 508.1.0 |
 | SDK: `textDocument/inlayHint` als Shared Handler | ✅ dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565), schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)); erster Dev-Tag **`3.14.0-139.0.dev`** = `MIN_LSP_INLAY_HINTS_SDK_VERSION` |
 | Teil 3 — LSP Inlay Hints (#159) | 🟡 [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) **Ready for review** (Branch `lsp-inlay-hints` = `20b85b64`, 4 Commits auf upstream `main` `fb835401`) |
-| Go to Type Declaration (#580) | 🟡 [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) **Ready for review** (Branch `lsp-type-definition` = `7519c92d`, 5 Commits auf `main`, unabhängig von #617) |
+| Go to Type Declaration (#580) | ❌ **Duplikat** — helin24s [#615](https://github.com/flutter/dart-intellij-third-party/pull/615) (18.08., 20:16 UTC) war zuerst da; [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) am 19.08. mit Entschuldigung geschlossen. Branch `lsp-type-definition` (`7519c92d`) bleibt vorerst liegen (Location-tolerantes Parsing + Tests als mögliches Follow-up zu #615 angeboten). |
 | Scope-Analyse #207 + Fragenkatalog | ✅ `specs/2026-08-18-lsp-migration-scope-analysis.md`, `OPEN-QUESTIONS-maintainers.md` (Q0–Q13); alle Fragen am 2026-08-18 gepostet, Stacked-PR-Frage am 2026-08-19 zurückgezogen |
 
 Beide PRs sind durch: Unit-Tests (`com.jetbrains.lang.dart.lsp.*`), `verifyPlugin` (keine neuen
@@ -22,30 +22,30 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   getestete Code ist nicht veröffentlichbar; das Snippet im PR-Text reproduziert es). Im PR-Text steht
   ausdrücklich: Feature ist per Default an (Schalter defaultet auf `true`), alle Kategorien, kein eigener
   Aus-Schalter — die Maintainer sollen das bewusst absegnen.
-- **#618:** Flag an → ⌃⇧B springt zum Typ (auch in `.pub-cache`, z. B. `GoRouter`), Flag aus → nichts
-  (Altverhalten), Log sauber. Seit `7519c92d` mappt die Bridge alle Antwortformen (`[LocationLink…]`,
-  `[Location…]`, nacktes `Location`, `null`/`[]`) — **nicht mehr von #614 abhängig**; Task 5 des Plans
-  (`typeDefinition.linkSupport` in `buildLspCapabilities`) ist nur noch optionale Parität mit `definition`.
+- **#618 (geschlossen):** war in der Sandbox verifiziert (Flag an → ⌃⇧B springt zum Typ, auch `.pub-cache`;
+  Flag aus → nichts; Log sauber), ist aber inhaltlich #615 — helin24 schaltet Type Declaration dort
+  **global** frei (kein Legacy-Pfad, daher kein experimenteller Schalter) und advertised `linkSupport`
+  direkt in `RequestUtilities.java`. Nach dem Merge von #615 muss #617 rebased werden (Überlappung in
+  `initialize()`, `LspMethod`, Descriptor-Imports, CHANGELOG).
 
 ## Als Nächstes
 
 1. **Review-Runden begleiten** (beide PRs + die Fragen):
-   - Gemini/Maintainer-Kommentare auf #617/#618 prüfen: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
+   - Gemini/Maintainer-Kommentare auf #617 (und ggf. Antwort auf das Follow-up-Angebot in #618) prüfen: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
      bzw. `gh api repos/flutter/dart-intellij-third-party/pulls/<n>/comments`. Änderungen: eine nach der
      anderen, lokal testen, erst dann pushen (so wie heute). Antworten in Ich-Form.
    - Antworten auf die Fragen einsammeln: `gh issue view <n> --repo flutter/dart-intellij-third-party --comments`
      für #207, #396, #400, #402, #401, #403, #404, #399, #407, #405, #406, #441; Ergebnis in
      `OPEN-QUESTIONS-maintainers.md` eintragen (✅ + Datum + Kurzfassung). Bei „ja" zu Q3 (Closing Labels)
      ein dart-lang/sdk-Issue aufmachen (Vorlage: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`).
-   - Wenn einer der PRs gemergt ist: den anderen auf `main` rebasen (textuelle Überlappung in
+   - Wenn #615 (oder #612/#614) gemergt ist: #617 auf `main` rebasen (textuelle Überlappung in
      `DartBridgeLspServer.kt`, `LspMethod.kt`, `DartLspServerDescriptor.kt`, `CHANGELOG.md`, Test-Datei).
-     Ebenso nach helin24s #612/#614 (beide berühren `DartBridgeLspServer(.kt/Test.kt)`).
 2. **Nach den Antworten planen:** Stack 2 („Navigation family": #396, ggf. #404/#403) bzw. Stack 3
    („Push-Notifications über LSP-over-Legacy": #400, #402) — jeweils zuerst SDK-Issue/CL, dann Plugin;
    für SDK-Änderungen die Handoff-Vorlage kopieren. Da Stacked PRs aus einem Fork nicht gehen
    (github/gh-stack#46), bleibt es bei max. zwei unabhängigen PRs gleichzeitig.
 3. **Arbeitsumgebung:** Worktree `.claude/worktrees/lsp-inlay-hints` (steht auf `lsp-inlay-hints`;
-   für #618 `git checkout lsp-type-definition`) und SDD-Ledger
+   `lsp-type-definition` nur noch als Fundus für ein Follow-up zu #615) und SDD-Ledger
    `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` bleiben, bis beide PRs gemergt sind.
    Sandbox-Log: `<Worktree>/third_party/.intellijPlatform/sandbox/Dart/IU-2026.1.3/log/idea.log`.
    Dev-SDK für Inlay-Hint-Tests: `/Users/ralph.bergmann/development/sdks/flutter/bin/cache/dart-sdk`
@@ -70,6 +70,11 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   `DartBridgeLspServerTest.setUp`), `?.`, `?:` oder `if (x != null)`. Pläne dürfen keine Ausnahme
   „für Testcode" mehr formulieren; ein vorhandenes `!!` im Umfeld wird nicht kopiert, sondern ist ein
   Follow-up-Kandidat (requireNotNull-Sweep).
+- **Vor jedem neuen Feature die PR-Liste neu ziehen — komplett, nicht nur die bekannten PRs:**
+  `gh pr list --repo flutter/dart-intellij-third-party --state open` plus Assignees/Kommentare des
+  Ziel-Issues. Lehre aus #618 (19.08.): helin24 hatte #580 am Abend vorher als #615 geöffnet; ich hatte
+  nur #526/#612/#614 auf Merge-Stand geprüft und damit ein Duplikat gebaut und eröffnet. Also: erst
+  gucken, dann bauen — auch wenn die Liste „gestern" schon geprüft wurde.
 - **Max. zwei offene PRs.** Stacked PRs gehen aus einem Fork nicht („Cross-fork stacks are not
   supported", github/gh-stack#46), also unabhängige PRs; wer als Zweiter gemergt wird, rebased trivial.
 - Nichts unter `third_party/thirdPartySrc/` ändern (Code-Review-Skill des Repos → `[MUST-FIX]`);
@@ -102,5 +107,6 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   + Info-Log, weil der Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt); beide PRs als Draft
   geöffnet; GitHub-Stacks scheitern aus dem Fork → #618 auf `main` entstapelt, Frage auf #207
   zurückgezogen; Gemini-Runde 1 abgearbeitet (`!!`→`requireNotNull`; `typeDefinition` akzeptiert
-  `Location`-Antworten → #618 unabhängig von #614); Sandbox-Checks für beide PRs mit Ralph; beide
-  PRs auf „Ready for review".
+  `Location`-Antworten); Sandbox-Checks für beide PRs mit Ralph; beide PRs auf „Ready for review" —
+  dann entdeckt, dass #618 helin24s #615 dupliziert → #618 geschlossen, Entschuldigung auf #618/#207,
+  neue Regel „PR-Liste vor jedem Feature neu ziehen".

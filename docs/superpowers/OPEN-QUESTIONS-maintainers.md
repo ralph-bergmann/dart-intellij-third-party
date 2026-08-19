@@ -50,6 +50,8 @@ Questions:
 2. Of the open #207 items nobody is assigned to (#396, #400, #401, #402, #403, #404, #405, #406, #407,
    #580), which would you like me to take, and which are you planning to do yourselves? I am
    starting with #159 (inlay hints, sdk#64061 has landed) and #580 (typeDefinition) as one stack.
+   *(2026-08-19: #580 turned out to be already covered by helin24's #615; my #618 was closed as a
+   duplicate and the GitHub comment edited accordingly.)*
 
 ---
 
