@@ -53,7 +53,13 @@
      neuen Tests → `requireNotNull` (`20b85b64`, gepusht); Null-Concern war schon abgedeckt
      (geantwortet). **Offen: der manuelle Sandbox-Check (Task 3 Step 1)** mit einem Dev-SDK
      ≥ 3.14.0-139.0.dev (Flutter-SDKs sind zu alt; Dev-Zip von dart.dev/get-dart/archive, Dev channel)
-     — danach Screenshots in den PR-Body, Draft aufheben. Im PR-Body steht explizit: Feature ist per Default an (experimenteller
+     — **erledigt 2026-08-19 mit Flutter `master` (Dart 3.14.0-143.0.dev):** alle Hint-Kategorien sichtbar,
+     Closing Labels daneben ohne Doppelung (bleiben auch bei Flag aus), Toggle an/aus ok, Scratch-Datei
+     wird analysiert und gehintet, Hints nach IDE-Start sobald „Analyzing…" fertig ist, Flutter `stable`
+     (Dart 3.13.0) → keine Hints (Versions-Gate), idea.log ohne ERROR und ohne `inlayHint failed`-Zeile.
+     Bonus: ⌘+Klick auf einen Typ-Hint navigiert zum Typ. Screenshot: `docs/SCR-20260819-qcsg.png`
+     (nicht committen — per Drag & Drop in die PR-Beschreibung; dann Draft aufheben = Ralph).
+     Im PR-Body steht explizit: Feature ist per Default an (experimenteller
      LSP-Schalter defaultet auf `true`), alle Kategorien, kein eigener Aus-Schalter — Maintainer
      sollen sagen, ob sie das so wollen.
    - **PR B** [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) „Go to Type
@@ -64,8 +70,8 @@
      `buildLspCapabilities`) ist damit **optional** (Parität mit `definition`, liefert nur die
      Origin-Range) — wenn überhaupt, erst nach #614. **Sandbox 2026-08-19 (Ralph, Flutter-Projekt):**
      Flag an → ⌃⇧B springt zum Typ (auch `.pub-cache`, `GoRouter`), Flag aus → nichts, Log sauber.
-     Offen für Un-Draft: Datei beim Start vs. später geöffnet, `dart:`-SDK-Datei, Toggle-Lifecycle,
-     Screenshots; Gemini-Antworten sind gepostet, nächste Gemini-Runde abwarten.
+     **Ready for review seit 2026-08-19 (von Ralph umgestellt)**; Gemini-Antworten gepostet, nächste
+     Gemini-/Maintainer-Runde abwarten.
    - **Stacked PRs sind für uns (Fork → Upstream) nicht möglich** — Trunk und Layer-Branches müssen im
      selben Repo liegen („Cross-fork stacks are not supported"; github/gh-stack#46 = Fork-Support steht
      bei GitHub auf der Roadmap; `gh pr create --base <Fork-Branch>` gegen upstream scheitert mit
