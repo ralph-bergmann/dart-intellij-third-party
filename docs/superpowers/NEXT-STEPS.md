@@ -11,7 +11,7 @@
 | Go to Type Declaration (#580) | ❌ **Duplikat** — helin24s [#615](https://github.com/flutter/dart-intellij-third-party/pull/615) (18.08., 20:16 UTC) war zuerst da; [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) am 19.08. mit Entschuldigung geschlossen. Branch `lsp-type-definition` (`7519c92d`) bleibt vorerst liegen (Location-tolerantes Parsing + Tests als mögliches Follow-up zu #615 angeboten). |
 | Scope-Analyse #207 + Fragenkatalog | ✅ `specs/2026-08-18-lsp-migration-scope-analysis.md`, `OPEN-QUESTIONS-maintainers.md` (Q0–Q13); alle Fragen am 2026-08-18 gepostet, Stacked-PR-Frage am 2026-08-19 zurückgezogen |
 
-Beide PRs sind durch: Unit-Tests (`com.jetbrains.lang.dart.lsp.*`), `verifyPlugin` (keine neuen
+#617 ist durch: Unit-Tests (`com.jetbrains.lang.dart.lsp.*`), `verifyPlugin` (keine neuen
 Baseline-Zeilen, die auf die Änderungen zurückgehen), Repo-Code-Review-Skill (0 MUST-FIX), Final-Review
 mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
 
@@ -30,7 +30,7 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
 
 ## Als Nächstes
 
-1. **Review-Runden begleiten** (beide PRs + die Fragen):
+1. **Review-Runden begleiten** (#617 + die Fragen):
    - Gemini/Maintainer-Kommentare auf #617 (und ggf. Antwort auf das Follow-up-Angebot in #618) prüfen: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
      bzw. `gh api repos/flutter/dart-intellij-third-party/pulls/<n>/comments`. Änderungen: eine nach der
      anderen, lokal testen, erst dann pushen (so wie heute). Antworten in Ich-Form.
@@ -46,7 +46,7 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
    (github/gh-stack#46), bleibt es bei max. zwei unabhängigen PRs gleichzeitig.
 3. **Arbeitsumgebung:** Worktree `.claude/worktrees/lsp-inlay-hints` (steht auf `lsp-inlay-hints`;
    `lsp-type-definition` nur noch als Fundus für ein Follow-up zu #615) und SDD-Ledger
-   `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` bleiben, bis beide PRs gemergt sind.
+   `.superpowers/sdd/2026-08-18-lsp-endpoint-stack-1/progress.md` bleiben, bis #617 gemergt ist.
    Sandbox-Log: `<Worktree>/third_party/.intellijPlatform/sandbox/Dart/IU-2026.1.3/log/idea.log`.
    Dev-SDK für Inlay-Hint-Tests: `/Users/ralph.bergmann/development/sdks/flutter/bin/cache/dart-sdk`
    (Flutter `master`). SDK-Checkout `~/development/projects/privat/dart-sdk/sdk` steht noch auf dem
