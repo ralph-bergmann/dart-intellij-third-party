@@ -52,6 +52,17 @@ for them yet. Precedent for adding one: `d42063aac44` (2026-08-17, DanTup, sdk#6
 `textDocument/publishDiagnostics` to LoL clients that advertise the `publishDiagnostics` client
 capability, via `LegacyAnalysisServer.sendLspNotification` (arrives as legacy `lsp.notification`).
 
+**Server options are LSP-only too** (`pkg/analysis_server/tool/lsp_spec/README.md`): the
+*Initialization Options* (`onlyAnalyzeProjectsWithOpenFiles`, `suggestFromUnimportedLibraries`,
+`closingLabels`, `outline`, `flutterOutline`, `allowOpenUri`) travel with `initialize`, and the
+*Client Workspace Configuration* (`dart.*`: `analysisExcludedFolders`, `enableSdkFormatter`,
+`lineLength` (deprecated), `completeFunctionCalls`, `showTodos`, `renameFilesWithClasses`,
+`enableSnippets`, `updateImportsOnRename`, `documentation`, `includeDependenciesInWorkspaceSymbols`,
+`inlayHints` with six per-category switches) is pulled via `workspace/configuration` /
+`workspace/didChangeConfiguration` — neither exists over LoL, so the legacy server runs on the
+defaults of `LspInitializationOptions`/`LspClientConfiguration` (e.g. all inlay-hint categories on).
+How a LoL client could pass them, and where their IntelliJ settings UI would live, is question Q13.
+
 **No LSP counterpart at all** (legacy-only protocol): postfix templates (`edit.getPostfixCompletion`,
 `edit.listPostfixCompletionTemplates`, #405) and statement completion
 (`edit.getStatementCompletion`, #406) — `git grep -i 'postfix\|statementCompletion'` over
@@ -196,7 +207,9 @@ statement, #407 rename (dialog + preview), #520 code actions.
 
 **"Aktuell haben wir inlay hints und usage count geplant, richtig?"** — Inlay hints: yes, Part 3 of
 `plans/2026-07-30-dart-inlay-hints.md`, now unblocked (SDK commit `7c18d1fa0e5`, first dev tag
-`3.14.0-139.0.dev`). Usage count: it was *design-only* (decision D3) because the SDK's `CodeLensHandler`
+`3.14.0-139.0.dev`). They ship with the server's default configuration (all six `dart.inlayHints`
+categories on) because the configuration channel is LSP-only — per-category settings are a
+follow-up tied to Q13. Usage count: it was *design-only* (decision D3) because the SDK's `CodeLensHandler`
 only emits augmentation lenses. That is still true, and DanTup has since stated on the corresponding
 VS Code request (Dart-Code#1605, 2025-10-27) that he considers reference counts a client/LSP-generic
 feature, not something the analysis server should compute. So the realistic path is an IDE-side
@@ -254,6 +267,13 @@ per-category inlay-hint settings UI (spec §4.3 follow-up); anything DAP-related
 * publishDiagnostics-over-LoL precedent: `git show d42063aac44` — `notification_manager.dart`
   checks `editorClientCapabilities.publishDiagnostics` and calls `analysisServer.sendLspNotification`;
   design discussion in sdk#64021 (DanTup proposed reusing the LSP client capability as opt-in).
+* Server options: `git show origin/main:pkg/analysis_server/tool/lsp_spec/README.md` sections
+  "Initialization Options" (lines 24–32), "Client Workspace Configuration" (33–57), "Method Status"
+  (58–166: `inlayHint/resolve`, `codeLens/resolve`, `textDocument/declaration` unsupported),
+  "Client Commands" (385–432: `experimental.commands: ["dart.goToLocation"]`);
+  `client_configuration.dart:140` `LspClientConfiguration.replace`, `:195` `LspClientInlayHintsConfiguration`
+  (`boolean ?? true` defaults, lines 207–217); `legacy_analysis_server.dart:318/407` default
+  configuration; `handler_workspace_configuration.dart:31` `fetchClientConfigurationAndPerformDynamicRegistration()`.
 * No LSP postfix/statement completion: `git grep -n -i -E 'postfix|statementCompletion' origin/main -- pkg/analysis_server/lib/src/lsp` → empty; legacy handlers exist under `lib/src/handler/legacy/edit_get_postfix_completion.dart`, `edit_get_statement_completion.dart`, `edit_list_postfix_completion_templates.dart`.
 * LSP-only handler dependencies: `handler_completion.dart:86-87` uses `server.initializationOptions`;
   `handler_rename.dart:106` uses `server.lspClientConfiguration.global`, `:65/:159`

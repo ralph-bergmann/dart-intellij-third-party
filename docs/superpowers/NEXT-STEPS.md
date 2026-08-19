@@ -26,7 +26,11 @@
     Postfix/Complete-Statement #405/#406 (kein LSP-Protokoll).
   - **Nicht unsere:** codeAction #520 (helin24, PR #526), publishDiagnostics PR #612 (+ #441),
     setClientCapabilities PR #614, Analytics #374/#385, DAP #479.
-- **Fragenkatalog** `OPEN-QUESTIONS-maintainers.md` (Q0–Q12, zum Einfügen in die Issues).
+- **Fragenkatalog** `OPEN-QUESTIONS-maintainers.md` (Q0–Q13, zum Einfügen in die Issues). Q13 und
+  die Ergänzungen in Q3/Q4/Q8/Q9/Q12 decken die Server-Optionen aus
+  `pkg/analysis_server/tool/lsp_spec/README.md` ab (Initialization Options wie `closingLabels`/
+  `outline`, `dart.*`-Konfiguration wie `renameFilesWithClasses`, `inlayHints`-Kategorien) — beides
+  ist über LSP-over-Legacy nicht erreichbar, daher zwei Fragen: SDK-Transportweg und IntelliJ-Settings-UI.
 - **Plan für Stack 1** `plans/2026-08-18-lsp-endpoint-stack-1.md` (ersetzt Teil 3 des alten Plans;
   PR A = Inlay Hints auf `main`, PR B = typeDefinition gestapelt auf PR A).
 
@@ -34,7 +38,8 @@
 
 1. **Docs reviewen** (diese drei Dateien) und die Fragen posten — zuerst Q0 (Stacked PRs ok? was
    sollen wir übernehmen?) auf #207, dann Q1 (#396), Q2 (Usage Count — als Kommentar auf #396 oder
-   neues Issue), Q3 (#400). Antworten in `OPEN-QUESTIONS-maintainers.md` eintragen (Status-Legende).
+   neues Issue), Q3 (#400), Q13 (Server-Optionen/Settings-UI — auf #207, betrifft mehrere Features).
+   Antworten in `OPEN-QUESTIONS-maintainers.md` eintragen (Status-Legende).
 2. **Stack 1 umsetzen** (neue Claude-Session, `superpowers:subagent-driven-development`, Plan
    `plans/2026-08-18-lsp-endpoint-stack-1.md`):
    - Vorher prüfen, ob helin24s PRs #612/#614 gemergt sind (`gh pr view 612 --repo flutter/dart-intellij-third-party --json state,mergedAt`);
@@ -80,6 +85,10 @@
 - Plattform-Verhalten in den IntelliJ-Community-Quellen verifiziert (Implicit-Reference-Vorrang bei
   Go-to-(Type-)Declaration; Find-Usages-Target-Popup bei PSI + LSP; Hierarchy-Provider-Vorrang).
 - Vier Dokumente geschrieben/aktualisiert (Spec, Fragen, Plan Stack 1, Status in den alten Plänen).
+- Nachtrag auf Ralphs Hinweis: `pkg/analysis_server/tool/lsp_spec/README.md` (bei `origin/main`)
+  ausgewertet — Initialization Options, `dart.*`-Konfiguration, Method-Status-Tabelle, Client
+  Commands (`dart.goToLocation`) — und als Q13 plus Ergänzungen in Q2/Q3/Q4/Q8/Q9/Q12 eingearbeitet;
+  Spec §2.1/§7/§10 entsprechend erweitert.
 - Lokal nicht committet und bewusst liegen gelassen: `.gitignore` (+`.idea`) — ist Ralphs lokale
   Änderung, gehört nicht in die Planungs-Commits.
 
