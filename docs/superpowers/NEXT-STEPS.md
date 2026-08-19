@@ -1,4 +1,4 @@
-# Nächste Schritte (Stand: 2026-08-18)
+# Nächste Schritte (Stand: 2026-08-18, abends)
 
 ## Erledigt
 
@@ -7,7 +7,7 @@
   (`434c86f6`).
 - **Teil 2** (LSP Read/Write-Highlighting): [PR #552](https://github.com/flutter/dart-intellij-third-party/pull/552)
   — **gemergt 2026-08-10** (`d3d9e7bf`). Ist bereits in Release 508.1.0.
-- **SDK-Prerequisites für Teil 3 sind erledigt (2026-08-17):** unser CL ist gelandet —
+- **SDK-Prerequisites für Teil 3 sind erledigt (2026-08-17):** der CL ist gelandet —
   dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565),
   schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)). Erster Dev-Tag, der den Commit
   enthält: **`3.14.0-139.0.dev`** (138 enthält ihn nicht) → das ist `MIN_LSP_INLAY_HINTS_SDK_VERSION`.
@@ -24,7 +24,7 @@
     `publishClosingLabels` nicht über LSP-over-Legacy → Opt-in-Mechanismus fehlt), Outline #402,
     Hierarchie #403, Implementations #404, Completion #399, Semantic Tokens #401, Rename #407,
     Postfix/Complete-Statement #405/#406 (kein LSP-Protokoll).
-  - **Nicht unsere:** codeAction #520 (helin24, PR #526), publishDiagnostics PR #612 (+ #441),
+  - **Nicht meine (Ralph):** codeAction #520 (helin24, PR #526), publishDiagnostics PR #612 (+ #441),
     setClientCapabilities PR #614, Analytics #374/#385, DAP #479.
 - **Fragenkatalog** `OPEN-QUESTIONS-maintainers.md` (Q0–Q13, zum Einfügen in die Issues). Q13 und
   die Ergänzungen in Q3/Q4/Q8/Q9/Q12 decken die Server-Optionen aus
@@ -36,10 +36,13 @@
 
 ## Als Nächstes
 
-1. **Docs reviewen** (diese drei Dateien) und die Fragen posten — zuerst Q0 (Stacked PRs ok? was
-   sollen wir übernehmen?) auf #207, dann Q1 (#396), Q2 (Usage Count — als Kommentar auf #396 oder
-   neues Issue), Q3 (#400), Q13 (Server-Optionen/Settings-UI — auf #207, betrifft mehrere Features).
-   Antworten in `OPEN-QUESTIONS-maintainers.md` eintragen (Status-Legende).
+1. ✅ **Fragen sind gepostet (2026-08-18, 13 Kommentare, alle in Ich-Form):** zwei auf #207
+   (Scope/Stacked PRs/Usage Count/untracked Endpoints; Server-Optionen & Settings-UI, cc DanTup) und
+   je einer auf #396, #400 (cc DanTup), #402, #401, #403, #404, #399, #407, #405, #406, #441 — Links
+   stehen in den Überschriften von `OPEN-QUESTIONS-maintainers.md`. **Jetzt: Antworten abwarten**,
+   regelmäßig `gh issue view <n> --repo flutter/dart-intellij-third-party --comments` prüfen und die
+   Antworten in `OPEN-QUESTIONS-maintainers.md` eintragen (✅ + Datum + Kurzfassung). Bei einem „ja“ zu
+   Q3 folgt ein dart-lang/sdk-Issue (Vorlage: `plans/2026-07-30-sdk-share-inlay-hint-handler.md`).
 2. **Stack 1 umsetzen** (neue Claude-Session, `superpowers:subagent-driven-development`, Plan
    `plans/2026-08-18-lsp-endpoint-stack-1.md`):
    - Vorher prüfen, ob helin24s PRs #612/#614 gemergt sind (`gh pr view 612 --repo flutter/dart-intellij-third-party --json state,mergedAt`);
@@ -85,6 +88,9 @@
 - Plattform-Verhalten in den IntelliJ-Community-Quellen verifiziert (Implicit-Reference-Vorrang bei
   Go-to-(Type-)Declaration; Find-Usages-Target-Popup bei PSI + LSP; Hierarchy-Provider-Vorrang).
 - Vier Dokumente geschrieben/aktualisiert (Spec, Fragen, Plan Stack 1, Status in den alten Plänen).
+- Alle Fragen auf GitHub gepostet (als ralph-bergmann, Wortlaut für GitHub angepasst: Ich-Form, keine
+  internen Verweise; Querverweise zeigen auf die jeweiligen Kommentare). Q0 enthält jetzt den Hinweis,
+  dass Stacked PRs seit 2026-07-30 in Public Preview sind (GitHub-Changelog + Docs-Link).
 - Nachtrag auf Ralphs Hinweis: `pkg/analysis_server/tool/lsp_spec/README.md` (bei `origin/main`)
   ausgewertet — Initialization Options, `dart.*`-Konfiguration, Method-Status-Tabelle, Client
   Commands (`dart.goToLocation`) — und als Q13 plus Ergänzungen in Q2/Q3/Q4/Q8/Q9/Q12 eingearbeitet;
@@ -95,7 +101,7 @@
 ## Offene Aufräumpunkte
 
 - 2026.2-EAP-Inkompatibilität (`PsiTreeElementBase` weg, Structure View) als eigenes Issue/Fix —
-  betrifft `main`, nicht unsere PRs (und wäre durch #402/documentSymbol mittelfristig obsolet).
+  betrifft `main`, nicht meine PRs (und wäre durch #402/documentSymbol mittelfristig obsolet).
 - `gradlew.bat`-Zeilenenden-Normalisierung als Upstream-Housekeeping.
 - Follow-up-Ideen aus den Reviews: `requireNotNull`-Sweep in `DartBridgeLspServerTest`,
   TypeToken-Import-Konsolidierung (inzwischen importiert, s. `documentHighlight`), ggf. Versions-Gate

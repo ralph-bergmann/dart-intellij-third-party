@@ -1,9 +1,10 @@
 # Open questions for the maintainers (LSP migration, tracking issue #207)
 
-**Purpose:** the tasks below are ones we would like to contribute but that are not well-defined enough
+**Purpose:** the tasks below are ones I would like to contribute but that are not well-defined enough
 to plan without an answer from the plugin maintainers (helin24, pq) or the analysis-server side
-(DanTup, bwilkerson). Each entry gives the evidence, the concrete question, and — where we have one —
-a proposal, so that the text can be pasted into the linked issue as-is. Analysis backing this file:
+(DanTup, bwilkerson). Each entry gives the evidence, the concrete question, and — where I have one —
+a proposal. All of them were posted on GitHub on 2026-08-18 (links in the headings; wording
+adapted for GitHub — first person, no internal references). Analysis backing this file:
 `docs/superpowers/specs/2026-08-18-lsp-migration-scope-analysis.md`.
 
 **Status legend:** ⏳ not asked yet · 💬 asked (link) · ✅ answered (summary + date).
@@ -26,20 +27,25 @@ question is Q13; the per-feature questions reference the options that matter for
 
 ---
 
-## Q0 — Process: stacked PRs and what to pick up (post on #207) ⏳
+## Q0 — Process: stacked PRs and what to pick up 💬 [asked on #207, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321190)
 
-Context: the repo allows two open PRs per external contributor; we want to submit closely related
+Context: the repo allows two open PRs per external contributor; I want to submit closely related
 changes as *stacked* PRs (PR B based on PR A's branch) so that one review covers one pattern.
+Stacked pull requests are a fairly new GitHub feature — public preview since 2026-07-30
+([changelog](https://github.blog/changelog/2026-07-30-stacked-pull-requests-are-now-in-public-preview/),
+[docs](https://docs.github.com/en/pull-requests/how-tos/stacked-pull-requests)): each PR targets the
+layer below it, layers are reviewed independently, and when a lower PR merges the ones above are
+rebased and retargeted automatically.
 
 Questions:
 1. Are stacked PRs acceptable to you (review PR A first; PR B is retargeted to `main` after A merges)?
 2. Of the open #207 items nobody is assigned to (#396, #400, #401, #402, #403, #404, #405, #406, #407,
-   #580), which would you like us to take, and which are you planning to do yourselves? We are
+   #580), which would you like me to take, and which are you planning to do yourselves? I am
    starting with #159 (inlay hints, sdk#64061 has landed) and #580 (typeDefinition) as one stack.
 
 ---
 
-## Q1 — #396 Find usages via `textDocument/references`: how should PSI and LSP targets coexist? ⏳
+## Q1 — #396 Find usages via `textDocument/references`: how should PSI and LSP targets coexist? 💬 [asked on #396, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/396#issuecomment-5340340226)
 
 Evidence:
 * `textDocument/references` is available over LSP-over-Legacy since `3.14.0-65.0.dev`
@@ -64,16 +70,16 @@ Question: which integration do you want?
 * (b) Keep `DartServerFindUsagesHandler` as the UI integration (single PSI target, Dart usage
   grouping/usage types stay) but source its results from `textDocument/references` through the
   bridge instead of `search.findElementReferences` — no JetBrains-client feature involved.
-* (c) Accept the chooser popup while experimental (we would not recommend it).
+* (c) Accept the chooser popup while experimental (I would not recommend it).
 * Also: is Find Usages part of the `DartResolver` retirement you had in mind in #546, i.e. should
   the PSI suppression be designed for all of #396/#404/#403 at once?
 
-Our preference: (a) if you want to retire the PSI path, (b) if you want a minimal, reversible change
-now. We can prototype either.
+My preference: (a) if you want to retire the PSI path, (b) if you want a minimal, reversible change
+now. I can prototype either.
 
 ---
 
-## Q2 — Usage counts ("n usages" Code Vision) — IDE-side provider acceptable? ⏳
+## Q2 — Usage counts ("n usages" Code Vision) — IDE-side provider acceptable? 💬 [asked on #207 (section 3), 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321190)
 
 Evidence:
 * The SDK `CodeLensHandler` only provides augmentation lenses; there is no references lens. On the
@@ -93,7 +99,7 @@ Evidence:
 Questions:
 1. Would you accept an IDE-side Code Vision provider that issues one `textDocument/references`
    request per visible declaration (daemon-cached, cancellable, capped result count)? Any
-   performance envelope you want us to respect (e.g. only for files below N declarations, debounce)?
+   performance envelope you want me to respect (e.g. only for files below N declarations, debounce)?
 2. If not, would you rather have this raised with the analysis-server team as a code lens
    (contradicting DanTup's stated position), or dropped?
 
@@ -104,7 +110,7 @@ command (vendored `commandsCustomizer`) — otherwise the lenses' commands canno
 
 ---
 
-## Q3 — #400 Closing labels via LSP: how does an LSP-over-Legacy client opt in? (post on #400 and, if agreed, a new dart-lang/sdk issue) ⏳
+## Q3 — #400 Closing labels via LSP: how does an LSP-over-Legacy client opt in? 💬 [asked on #400 (cc DanTup), 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/400#issuecomment-5340340486) — SDK issue to follow once the mechanism is agreed
 
 Evidence:
 * Closing labels are a custom notification, `dart/textDocument/publishClosingLabels`
@@ -145,12 +151,12 @@ Questions:
    thing that drives the server option (`closingLabels` on/off → server computes or not), as in
    VS Code (`dart.closingLabels`)? See Q13 for the general settings-UI question.
 
-If you tell us the mechanism, we will file the SDK issue, write the CL (mirroring `d42063aac44`,
+If you tell me the mechanism, I will file the SDK issue, write the CL (mirroring `d42063aac44`,
 with an `lsp_over_legacy` test) and the plugin PR.
 
 ---
 
-## Q4 — #402 Outline: pull `documentSymbol` or push `publishOutline`, and who owns the structure view UI? ⏳
+## Q4 — #402 Outline: pull `documentSymbol` or push `publishOutline`, and who owns the structure view UI? 💬 [asked on #402, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/402#issuecomment-5340340682)
 
 Evidence:
 * Legacy: `DartStructureViewFactory/Model/Element` build the Structure view from the
@@ -179,7 +185,7 @@ Questions:
 
 ---
 
-## Q5 — #401 Syntax highlighting via semantic tokens ⏳
+## Q5 — #401 Syntax highlighting via semantic tokens 💬 [asked on #401, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/401#issuecomment-5340340860)
 
 Evidence: `SemanticTokensFullHandler`/`RangeHandler` are LSP-only (`AbstractSemanticTokensHandler
 extends LspMessageHandler`); an SDK conversion à la #63884 would be needed first, and the legacy
@@ -187,13 +193,13 @@ extends LspMessageHandler`); an SDK conversion à la #63884 would be needed firs
 highlighter, colour keys in `DartSyntaxHighlighterColors`). The vendored client's
 `LspSemanticTokensCustomizer` maps LSP token types/modifiers to platform text attributes.
 
-Questions: is this on your roadmap, and if we did it, would you accept a token→`TextAttributesKey`
+Questions: is this on your roadmap, and if I did it, would you accept a token→`TextAttributesKey`
 mapping that keeps today's Dart colour scheme keys (so user schemes keep working)? Should the SDK
 issue to share the semantic-tokens handlers be filed now?
 
 ---
 
-## Q6 — #403 Hierarchies: delegate the Dart providers to the LSP ones? ⏳
+## Q6 — #403 Hierarchies: delegate the Dart providers to the LSP ones? 💬 [asked on #403, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/403#issuecomment-5340341066)
 
 Evidence: prepare/type/call hierarchy handlers are shared over LoL (Dart 3.3.0); the vendored
 `LspTypeHierarchyProvider`/`LspCallHierarchyProvider` are registered for `language=""` with
@@ -208,7 +214,7 @@ Dart registrations be removed once LSP is the default? Is losing the method hier
 
 ---
 
-## Q7 — #404 Implementations & overrides: no JetBrains-client feature exists ⏳
+## Q7 — #404 Implementations & overrides: no JetBrains-client feature exists 💬 [asked on #404, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/404#issuecomment-5340341247)
 
 Evidence: `textDocument/implementation` and `dart/textDocument/super` are shared over LoL, but the
 vendored client has no customizer/EP for them (no `LspGoToImplementation…`). Legacy uses *push*
@@ -224,7 +230,7 @@ LoL, or (c) accept N `textDocument/implementation` requests per file for the mar
 
 ---
 
-## Q8 — #399 Completion ⏳
+## Q8 — #399 Completion 💬 [asked on #399, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/399#issuecomment-5340341462)
 
 Evidence: `CompletionHandler` is LSP-only and depends on `server.initializationOptions`
 (`suggestFromUnimportedLibraries`, `completionBudgetMilliseconds`) and `lspClientConfiguration`
@@ -240,7 +246,7 @@ IntelliJ setting (today none of them has one)?
 
 ---
 
-## Q9 — #407 Rename ⏳
+## Q9 — #407 Rename 💬 [asked on #407, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/407#issuecomment-5340341641)
 
 Evidence: `PrepareRenameHandler`/`RenameHandler` are LSP-only (use `server.lspClientConfiguration.global`,
 `server.refactoringWorkspace`); helin24 marked #407 blocked until #520 (named constructors /
@@ -261,7 +267,7 @@ is a JetBrains confirmation dialog per rename acceptable?
 
 ---
 
-## Q10 — #405 Postfix templates and #406 Complete statement: no LSP protocol ⏳
+## Q10 — #405 Postfix templates and #406 Complete statement: no LSP protocol 💬 asked 2026-08-18 on [#405](https://github.com/flutter/dart-intellij-third-party/issues/405#issuecomment-5340341804) and [#406](https://github.com/flutter/dart-intellij-third-party/issues/406#issuecomment-5340341980)
 
 Evidence: `git grep -i 'postfix\|statementCompletion' pkg/analysis_server/lib/src/lsp` is empty;
 only legacy handlers exist (`edit_get_postfix_completion.dart`, `edit_get_statement_completion.dart`,
@@ -269,19 +275,19 @@ only legacy handlers exist (`edit_get_postfix_completion.dart`, `edit_get_statem
 
 Question: are these meant to be (a) new custom LSP methods in the analysis server (who designs
 them?), (b) re-implemented client-side (IntelliJ postfix templates / smart-enter without server help),
-or (c) dropped when the legacy protocol goes away? Until that is decided we will not touch them.
+or (c) dropped when the legacy protocol goes away? Until that is decided I will not touch them.
 
 ---
 
-## Q11 — #441 Context-message navigation (coordinate with #612) ⏳
+## Q11 — #441 Context-message navigation (coordinate with #612) 💬 [posted on #441, 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/441#issuecomment-5340342153)
 
 Note for helin24: `Diagnostic.relatedInformation` carries the context-message locations; the new
 `DartLspDiagnosticConverter` in #612 is the natural place to keep them navigable in the Dart Analysis
-tool window. We can help verify/test once #612 is in — just say so on #441.
+tool window. I can help verify/test once #612 is in — just say so on #441.
 
 ---
 
-## Q12 — Shared endpoints not tracked in #207 — do you want issues for them? ⏳
+## Q12 — Shared endpoints not tracked in #207 — do you want issues for them? 💬 [asked on #207 (section 3), 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321190)
 
 All shared over LoL and supported by the vendored client: `textDocument/signatureHelp` (vs.
 `DartParameterInfoHandler`; the vendored `LspParameterInfoHandler` is registered for `language=""`,
@@ -300,7 +306,7 @@ take PRs for them?
 
 ---
 
-## Q13 — Server options over LSP-over-Legacy, and where their settings UI lives in IntelliJ ⏳
+## Q13 — Server options over LSP-over-Legacy, and where their settings UI lives in IntelliJ 💬 [asked on #207 (cc DanTup), 2026-08-18](https://github.com/flutter/dart-intellij-third-party/issues/207#issuecomment-5340321384)
 
 Evidence (README *Initialization Options* / *Client Workspace Configuration*, SDK sources):
 * Pure-LSP clients configure the server in two ways; **neither is reachable over LoL**:
@@ -334,13 +340,13 @@ Questions:
    server routes into `LspClientConfiguration.replace()` (`client_configuration.dart:140` — the LSP
    server reaches it via `fetchClientConfigurationAndPerformDynamicRegistration()` after
    `workspace/didChangeConfiguration`)? Or should per-user options wait until the
-   plugin talks pure LSP, accepting server defaults in the meantime (our assumption for Stack 1)?
+   plugin talks pure LSP, accepting server defaults in the meantime (my assumption for the inlay-hints PR)?
 2. **Plugin UI:** where should these options live — (a) all under *Settings | Languages &
    Frameworks | Dart* next to the experimental-LSP checkbox (one place, mirrors VS Code's `dart.*`
    settings), (b) spread over the IntelliJ-native places (inlay-hint categories under *Editor | Inlay
    Hints*, file-rename under the rename dialog, completion options under *Editor | General | Code
    Completion*), or (c) no UI until the options actually reach the server (so no dead checkboxes)?
-   Our recommendation: (c) for now, then (b) for anything users already expect in the IntelliJ place
+   My recommendation: (c) for now, then (b) for anything users already expect in the IntelliJ place
    (inlay-hint categories, rename dialog) and (a) for server-behaviour switches without a native home
    (`suggestFromUnimportedLibraries`, `documentation`, `includeDependenciesInWorkspaceSymbols`).
 3. Specifically for inlay hints (Stack 1 ships with server defaults): is a follow-up acceptable

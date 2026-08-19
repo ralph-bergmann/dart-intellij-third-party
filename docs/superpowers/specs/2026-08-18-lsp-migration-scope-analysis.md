@@ -12,11 +12,11 @@ The Dart SDK change that Part 3 of the inlay-hints plan depended on has landed
 (dart-lang/sdk commit `7c18d1fa0e5`, [CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565),
 closes [dart-lang/sdk#64061](https://github.com/dart-lang/sdk/issues/64061), 2026-08-17). That
 unblocks the last planned PR. Before continuing, Ralph widened the scope: instead of only shipping the
-features that replace the abandoned *Flutter Enhancement Suite* (inlay hints, usage counts), we want to
+features that replace the abandoned *Flutter Enhancement Suite* (inlay hints, usage counts), Ralph wants to
 contribute more of the maintainers' LSP migration
 ([tracking issue #207](https://github.com/flutter/dart-intellij-third-party/issues/207)) — but only
 work that is well-defined, and grouped so that similar changes arrive as *stacked* PRs (the repo
-allows us two open PRs at a time; reviewers should see the same pattern once, not five times).
+allows him two open PRs at a time; reviewers should see the same pattern once, not five times).
 
 Ground rules for everything below: every claim is validated against the issue trackers or the real
 code (plugin repo, vendored JetBrains LSP client, `dart-lang/sdk` at `origin/main` = `00c42422917`,
@@ -32,7 +32,7 @@ Reachable over LSP-over-Legacy (`lsp.handle`) = registered in
 
 | Handler | Shared since | Relevant to |
 |---|---|---|
-| `InlayHintHandler` | **`7c18d1fa0e5`, first dev tag `3.14.0-139.0.dev`** | #159 (our Part 3) |
+| `InlayHintHandler` | **`7c18d1fa0e5`, first dev tag `3.14.0-139.0.dev`** | #159 (Ralph's Part 3) |
 | `DefinitionHandler`, `ReferencesHandler` | `c6d728bfd33` → `3.14.0-65.0.dev` (#63884) | #398 ✅ done, #396 |
 | `TypeDefinitionHandler`, `ImplementationHandler`, `SuperHandler`, `DocumentSymbolHandler`, `Prepare/…TypeHierarchy`, `Prepare/…CallHierarchy`, `HoverHandler`, `DocumentHighlightsHandler`, `SignatureHelpHandler`, `WorkspaceSymbolHandler`, `Formatting*`, `DocumentColor*` | already shared in Dart 3.3.0 (`SuperHandler` in 3.5.0) | #580, #404, #402, #403, … |
 | `CodeLensHandler` (augmentation lenses only) | 3.5.0 | usage count (§7) |
@@ -128,11 +128,11 @@ Verified in IntelliJ Community sources (`platform/lang-impl/src/com/intellij/mod
 Legend — **LoL:** endpoint reachable over LSP-over-Legacy today · **Client:** vendored JetBrains LSP
 client has the feature · **Legacy:** what the plugin uses now · **Verdict:** simple = plan now;
 question = needs a maintainer answer (see `docs/superpowers/OPEN-QUESTIONS-maintainers.md`);
-not ours = owned/in progress by maintainers.
+not mine = owned/in progress by maintainers.
 
 | Issue | Endpoint(s) | LoL | Client | Legacy code | Group | Verdict |
 |---|---|---|---|---|---|---|
-| [#159](https://github.com/flutter/dart-intellij-third-party/issues/159) inlay hints (not a #207 child, but ours) | `textDocument/inlayHint` | ✅ ≥ 3.14.0-139.0.dev | ✅ | none (closing labels are separate) | A/B | **simple — Stack 1, PR A** |
+| [#159](https://github.com/flutter/dart-intellij-third-party/issues/159) inlay hints (not a #207 child, but Ralph's) | `textDocument/inlayHint` | ✅ ≥ 3.14.0-139.0.dev | ✅ | none (closing labels are separate) | A/B | **simple — Stack 1, PR A** |
 | [#580](https://github.com/flutter/dart-intellij-third-party/issues/580) typeDefinition | `textDocument/typeDefinition` | ✅ (≤ 3.3.0) | ✅ | none | A/B | **simple — Stack 1, PR B** |
 | [#396](https://github.com/flutter/dart-intellij-third-party/issues/396) find usages | `textDocument/references` | ✅ ≥ 3.14.0-65.0.dev | ✅ | `DartServerFindUsagesHandler(Factory)`, `DartFindUsagesProvider`, `DartUsageTypeProvider`, grouping rules | A/C | question Q1 (PSI target arbitration) |
 | — usage count (no issue) | `textDocument/codeLens` has no references lens; `textDocument/references` | ✅ | ✅ (`LspCodeVisionProvider`) | none | A | question Q2 (SDK lens rejected by DanTup in Dart-Code#1605 → IDE-side provider?) |
@@ -145,10 +145,10 @@ not ours = owned/in progress by maintainers.
 | [#407](https://github.com/flutter/dart-intellij-third-party/issues/407) rename | `textDocument/prepareRename`, `rename` | ❌ LSP-only | ✅ | `DartServerRenameHandler` | C | blocked on #520 per helin24; question Q9 |
 | [#405](https://github.com/flutter/dart-intellij-third-party/issues/405) postfix templates | none in LSP | ❌ | ❌ | `DartRemotePostfixTemplate`, `DartPostfixTemplateProvider` | C | question Q10 |
 | [#406](https://github.com/flutter/dart-intellij-third-party/issues/406) complete statement | none in LSP | ❌ | ❌ | `DartServerStatementCompletionProcessor` | C | question Q10 |
-| [#441](https://github.com/flutter/dart-intellij-third-party/issues/441) context-message navigation | `Diagnostic.relatedInformation` | ✅ (via #612) | ✅ | `DartProblemsView` | B | not ours — belongs to helin24's #612 (`DartLspDiagnosticConverter`); note in Q11 |
-| [#520](https://github.com/flutter/dart-intellij-third-party/issues/520) codeAction | `textDocument/codeAction` | ✅ | ✅ | quick fixes/assists/refactorings | C | not ours — helin24, PR #526 |
-| [#374](https://github.com/flutter/dart-intellij-third-party/issues/374), [#385](https://github.com/flutter/dart-intellij-third-party/issues/385) analytics/timing | — | — | — | analytics infrastructure | — | not ours (Google-internal analytics decisions) |
-| [#479](https://github.com/flutter/dart-intellij-third-party/issues/479) DAP debugger | DAP | — | — | debugger | — | not ours (helin24, P2, different protocol) |
+| [#441](https://github.com/flutter/dart-intellij-third-party/issues/441) context-message navigation | `Diagnostic.relatedInformation` | ✅ (via #612) | ✅ | `DartProblemsView` | B | not mine — belongs to helin24's #612 (`DartLspDiagnosticConverter`); note in Q11 |
+| [#520](https://github.com/flutter/dart-intellij-third-party/issues/520) codeAction | `textDocument/codeAction` | ✅ | ✅ | quick fixes/assists/refactorings | C | not mine — helin24, PR #526 |
+| [#374](https://github.com/flutter/dart-intellij-third-party/issues/374), [#385](https://github.com/flutter/dart-intellij-third-party/issues/385) analytics/timing | — | — | — | analytics infrastructure | — | not mine (Google-internal analytics decisions) |
+| [#479](https://github.com/flutter/dart-intellij-third-party/issues/479) DAP debugger | DAP | — | — | debugger | — | not mine (helin24, P2, different protocol) |
 
 Shared endpoints the vendored client supports that **#207 does not track** (candidates to *offer*, not
 to start unasked): signature help (`textDocument/signatureHelp` vs. `DartParameterInfoHandler`),
@@ -163,7 +163,7 @@ cross-references). Listed in Q12.
 **Group A — fits the work already planned (inlay hints / usage count) and can ship together:**
 #159 inlay hints (ready), #580 typeDefinition (same 4-file "enable an endpoint" pattern as #539/#552,
 nothing to gate), #396 find usages (the endpoint the usage count would also use — but blocked on Q1),
-usage count itself (Q2). Also #400 closing labels sits next to the inlay-hint provider we renamed —
+usage count itself (Q2). Also #400 closing labels sits next to the inlay-hint provider renamed in #551 —
 but is blocked on the SDK protocol (Q3).
 
 **Group B — display-only features:** #159 inlay hints, #400 closing labels, #401 syntax highlighting,
@@ -179,19 +179,19 @@ statement, #407 rename (dialog + preview), #520 code actions.
 
 | # | Decision | Rationale (evidence) |
 |---|---|---|
-| S1 | **Implement now — Stack 1:** PR A = inlay hints (Part 3 of the 2026-07-30 plan, `MIN_LSP_INLAY_HINTS_SDK_VERSION = "3.14.0-139.0.dev"`), PR B = `textDocument/typeDefinition` (#580) stacked on PR A. | Both are the proven 4-file pattern (bridge override + capability + `LspMethod` + customizer), no SDK work left, no legacy code to gate, no PSI arbitration problem (§2.3). Identical shape → reviewers see one pattern; stacking keeps us at ≤ 2 open PRs. |
+| S1 | **Implement now — Stack 1:** PR A = inlay hints (Part 3 of the 2026-07-30 plan, `MIN_LSP_INLAY_HINTS_SDK_VERSION = "3.14.0-139.0.dev"`), PR B = `textDocument/typeDefinition` (#580) stacked on PR A. | Both are the proven 4-file pattern (bridge override + capability + `LspMethod` + customizer), no SDK work left, no legacy code to gate, no PSI arbitration problem (§2.3). Identical shape → reviewers see one pattern; stacking keeps Ralph at ≤ 2 open PRs. |
 | S2 | typeDefinition gets **no SDK version gate**, only the experimental flag (like hover and documentHighlight). | Shared since ≤ Dart 3.3.0; the plugin only adds `MIN_…` constants for handlers shared recently (navigation `3.14.0-65.0.dev`, diagnostic server `3.13.0-106.0.dev`, inlay hints `3.14.0-139.0.dev`). |
 | S3 | typeDefinition advertises `textDocument.typeDefinition.linkSupport = true` and deserializes `List<LocationLink>` exactly like `definition`. The capability goes into `DartAnalysisServerService.buildLspCapabilities` (introduced by helin24's #614) — PR B therefore waits for #614; if #614 dies, the only other place is `RequestUtilities.generateClientCapabilities` under `thirdPartySrc/`, which needs an explicit owner override (ask on the PR, precedent #539). | Mirrors the existing `definition` override and its comment; the SDK's `TypeDefinitionHandler` returns `Location` unless `typeDefinitionLocationLink` is set (`client_capabilities.dart:201`), and `LocationLink.originSelectionRange` is what the vendored `LspImplicitReferenceProvider` uses for the reference range. The vendored executor accepts both shapes, so this is consistency plus better highlighting, not a hard necessity. |
 | S4 | **Do not start** #396, usage count, #400, #402, #403, #404 before the maintainers answer Q1–Q7. Prepare the questions so that they can be pasted into the issues. | Each has an unresolved design point (PSI arbitration, SDK opt-in protocol, UI ownership) — planning them now would be guessing. |
 | S5 | **Do not touch** #399, #401, #405, #406, #407 beyond documenting the SDK/protocol gaps (Q5, Q8–Q10). | LSP-only handlers or no LSP protocol at all; #407 explicitly blocked by helin24 until #520. |
-| S6 | **Not ours:** #520/#526, #612 (+#441), #614, #374, #385, #479. Rebase Stack 1 on top of #612/#614 when they merge (they touch `DartBridgeLspServer.kt`, `DartBridgeLspServerTest.kt`, `DartAnalysisServerService.java`). | Avoid overlapping with the maintainer's in-flight PRs; the CLA/2-PR budget is better spent on things nobody else is doing. |
+| S6 | **Not mine:** #520/#526, #612 (+#441), #614, #374, #385, #479. Rebase Stack 1 on top of #612/#614 when they merge (they touch `DartBridgeLspServer.kt`, `DartBridgeLspServerTest.kt`, `DartAnalysisServerService.java`). | Avoid overlapping with the maintainer's in-flight PRs; the CLA/2-PR budget is better spent on things nobody else is doing. |
 | S7 | Usage count stays **design-only** for now (spec D3 upheld), but the question is sharpened: DanTup rejected a server-side references lens (Dart-Code#1605, 2025-10-27), so the only viable path is an IDE-side `CodeVisionProvider` counting via `textDocument/references` — ask before building (Q2). | Evidence in §7. |
 | S8 | No new SDK handoff document now: Stack 1 needs no SDK change. Handoff docs for closing labels (Q3) or others will be written once the mechanism is agreed. | Writing them before the protocol decision would violate "nothing invented". |
 
 ## 6. Stacked-PR strategy
 
 * GitHub stacked PRs: PR B's `--base` is PR A's branch; after A merges, GitHub retargets B to `main`
-  automatically (or we retarget). Only PR A counts as "reviewable now"; B is visible with a
+  automatically (or Ralph retargets). Only PR A counts as "reviewable now"; B is visible with a
   focused diff.
 * Order inside Stack 1: A = inlay hints (bigger, needs the SDK version gate; the reviewer already
   knows the story from #551/#552 and sdk#64061), B = typeDefinition (small, same shape).
