@@ -88,8 +88,14 @@
   `Co-Authored-By:`-Trailer** — Googles CLA-Bot behandelt Co-Autoren als eigene Contributor, der
   Check schlägt dann fehl. (Übersteuert Commit-Vorlagen in den Plan-Dokumenten.)
 - `git add` immer mit expliziten Dateien (gradlew.bat-CRLF-Falle), Gradle nur mit `JAVA_HOME` = IntelliJ-JBR.
-- **Max. zwei offene PRs**, ähnliche Änderungen als Stacked PRs (PR B mit `--base <Branch von PR A>`),
-  damit Reviewer ein Muster einmal sehen. Nach dem Merge von A: `gh pr edit <B> --base main` + Rebase.
+- **Kotlin: NIEMALS `!!` — auch nicht in Tests, auch nicht „weil der Nachbartest es so macht".**
+  `.gemini/styleguide.md` (Zeile 47) verbietet es ohne Ausnahme, und Gemini flaggt es in jedem PR als
+  `[MUST-FIX]` (#552-Review und erneut #617). Stattdessen `requireNotNull(x) { "…" }` (Vorbild:
+  `DartBridgeLspServerTest.setUp`), `?.`, `?:` oder `if (x != null)`. Pläne dürfen keine Ausnahme
+  „für Testcode" mehr formulieren; ein vorhandenes `!!` im Umfeld wird nicht kopiert, sondern ist ein
+  Follow-up-Kandidat (requireNotNull-Sweep).
+- **Max. zwei offene PRs.** Stacked PRs gehen aus einem Fork nicht (siehe oben), also unabhängige PRs;
+  wer als Zweiter gemergt wird, rebased trivial.
 - Nichts unter `third_party/thirdPartySrc/` ändern (Code-Review-Skill des Repos → `[MUST-FIX]`);
   Ausnahme nur mit Owner-Freigabe (siehe Plan Task 5 Fallback).
 - Diese Regeln stehen als „Ground rules" auch am Anfang der SDK-Handoff-Doku, damit der dortige

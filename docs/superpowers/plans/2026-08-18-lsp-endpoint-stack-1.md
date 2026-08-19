@@ -45,10 +45,15 @@ filled in, stacked-PR mechanics added).
   Task 5). `gh pr view 612 --repo flutter/dart-intellij-third-party --json state,mergedAt`.
 - NEVER modify files under `third_party/thirdPartySrc/` (the repo code-review skill rejects it with
   `[MUST-FIX]`; the only in-scope exception is described in Task 5's fallback).
-- Kotlin: no `!!` in production code, prefer `val`, imports instead of fully qualified names (the
-  bridge already imports `com.google.gson.reflect.TypeToken` — use it unqualified, as
-  `documentHighlight` does). Java: mirror the surrounding style (2-space indent, `final` locals as
-  in `isLspNavigationEnabled`).
+- Kotlin: **no `!!` anywhere — tests included** (`.gemini/styleguide.md`: "NEVER use the double-bang
+  `!!` operator"; Gemini flags it as `[MUST-FIX]` — it did on #552 and #617). Use
+  `requireNotNull(x) { "…" }` (as `DartBridgeLspServerTest.setUp` does), `?.`, `?:` or `if (x != null)`;
+  do not copy the `!!` from the pre-existing `testDocumentHighlightRequest`. Prefer `val`, imports
+  instead of fully qualified names (the bridge already imports `com.google.gson.reflect.TypeToken` —
+  use it unqualified, as `documentHighlight` does). Java: mirror the surrounding style (2-space indent,
+  `final` locals as in `isLspNavigationEnabled`).
+  *(2026-08-19: the earlier "test code may mirror the existing `!!`" exemption in this plan's task
+  briefs was wrong and is revoked — the test snippets in Tasks 1 and 4 must use `requireNotNull`.)*
 - All Gradle commands run from `third_party/` with
   `export JAVA_HOME="$HOME/Applications/IntelliJ IDEA.app/Contents/jbr/Contents/Home"`. Long runs
   (`test`, `verifyPlugin`, `runIde`) exceed the 10-minute tool limit — run in the background and poll.
