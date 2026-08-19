@@ -49,20 +49,23 @@
      upstream `main` `fb835401`). Tasks 1–3 erledigt inkl. Verifier (keine neuen Baseline-Zeilen),
      Repo-Code-Review (0 MUST-FIX), Final-Review + Fix-Wave (Fehlerantworten von DAS für
      `textDocument/inlayHint` werden jetzt zu „keine Hints" + Info-Log statt IDE-Fehler, weil der
-     Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt). **Offen: der manuelle Sandbox-Check
-     (Task 3 Step 1)** mit einem Dev-SDK ≥ 3.14.0-139.0.dev — danach Screenshots in den PR-Body,
-     Draft aufheben. Im PR-Body steht explizit: Feature ist per Default an (experimenteller
+     Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt). Gemini-Review 2026-08-19: `!!` in den
+     neuen Tests → `requireNotNull` (`20b85b64`, gepusht); Null-Concern war schon abgedeckt
+     (geantwortet). **Offen: der manuelle Sandbox-Check (Task 3 Step 1)** mit einem Dev-SDK
+     ≥ 3.14.0-139.0.dev (Flutter-SDKs sind zu alt; Dev-Zip von dart.dev/get-dart/archive, Dev channel)
+     — danach Screenshots in den PR-Body, Draft aufheben. Im PR-Body steht explizit: Feature ist per Default an (experimenteller
      LSP-Schalter defaultet auf `true`), alle Kategorien, kein eigener Aus-Schalter — Maintainer
      sollen sagen, ob sie das so wollen.
    - **PR B** [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) „Go to Type
-     Declaration via LSP typeDefinition" — Branch `lsp-type-definition` (`0718d326`, 3 Commits direkt
-     auf `main`, **unabhängig von A** — nur textuelle Überlappung, wer als Zweiter gemergt wird,
-     rebased trivial). Tasks 4, 6, 7 (Step 2–3) erledigt. **Offen: Task 5** (`typeDefinition.linkSupport`
-     in `buildLspCapabilities` + Test) — **blockiert auf helin24s #614**; bis dahin ist das Feature
-     nicht funktionsfähig (DAS liefert ohne linkSupport ein nacktes `Location`, der Bridge-Code
-     erwartet `List<LocationLink>`) und der Code-Kommentar in `typeDefinition(...)` verweist auf das
-     noch nicht existierende `buildLspCapabilities`. Nach #614: `main` ziehen, Branch rebasen, Task 5
-     committen, Sandbox-Check (Task 7 Step 1), Draft aufheben.
+     Declaration via LSP typeDefinition" — Branch `lsp-type-definition` (`7519c92d`, 5 Commits direkt
+     auf `main`, **unabhängig von A**). **Nicht mehr auf #614 blockiert:** seit `7519c92d` mappt die
+     Bridge alle Antwortformen (`[LocationLink…]`, `[Location…]`, nacktes `Location`, `null`/`[]`), d. h.
+     Go to Type Declaration funktioniert ohne `linkSupport`. Task 5 (`typeDefinition.linkSupport` in
+     `buildLspCapabilities`) ist damit **optional** (Parität mit `definition`, liefert nur die
+     Origin-Range) — wenn überhaupt, erst nach #614. **Sandbox 2026-08-19 (Ralph, Flutter-Projekt):**
+     Flag an → ⌃⇧B springt zum Typ (auch `.pub-cache`, `GoRouter`), Flag aus → nichts, Log sauber.
+     Offen für Un-Draft: Datei beim Start vs. später geöffnet, `dart:`-SDK-Datei, Toggle-Lifecycle,
+     Screenshots; Gemini-Antworten sind gepostet, nächste Gemini-Runde abwarten.
    - **Stacked PRs sind für uns (Fork → Upstream) nicht möglich** — Trunk und Layer-Branches müssen im
      selben Repo liegen („Cross-fork stacks are not supported"; github/gh-stack#46 = Fork-Support steht
      bei GitHub auf der Roadmap; `gh pr create --base <Fork-Branch>` gegen upstream scheitert mit
@@ -125,6 +128,10 @@
 - 2026-08-19 nachmittags: #618 auf `main` entstapelt (Rebase ohne A's Commits, 10/10 Tests,
   Force-Push), PR-Texte #617/#618 angepasst, Stacked-PR-Frage auf #207 zurückgezogen (Belege:
   Docs-Referenz, gh-stack#46, eigener Fehlversuch).
+- 2026-08-19 abends: drei Gemini-Kommentare abgearbeitet (`!!`→`requireNotNull` in #617 und #618;
+  typeDefinition akzeptiert jetzt auch `Location`-Antworten → #618 unabhängig von #614), Sandbox-Test
+  für Go to Type Declaration zusammen mit Ralph, beide Branches gepusht, Gemini geantwortet, #618-Text
+  angepasst. `!!`-Regel in NEXT-STEPS/Plan/Memory verschärft (gilt auch für Tests).
 
 ## Offene Aufräumpunkte
 
