@@ -11,6 +11,8 @@ den Tabellen B–D zu Issues (oder eben nicht).
 - **NEU:** PR #623 (ranbeuer, 2026-08-21) implementiert Find Usages via
   `textDocument/references` mit Experimental-Flag-Gating → Zeile in Tabelle C ist vergeben.
 - Inlay Hints Stufe 2 ist jetzt als #622 + dart-lang/sdk#64101 angelegt (kreuzverlinkt).
+- **Abend-Nachtrag:** PR #612 (Diagnostics) ist ebenfalls **gemergt** (2026-08-21);
+  PR #617 wurde von helin24 approved (isExperimental-Klarstellung + main-Merge nachgeschoben).
 
 Quellen (alle am 2026-08-19 verifiziert):
 
@@ -34,9 +36,9 @@ Quellen (alle am 2026-08-19 verifiziert):
 | Go to Declaration (⌘B) | `textDocument/definition` | ✅ merged (#398 / PR #539) |
 | Read/Write-Highlighting | `textDocument/documentHighlight` | ✅ merged (PR #552) |
 | Go to Type Declaration (⌘⇧B) | `textDocument/typeDefinition` | PR #615 (helin24) offen; unser #618 als Duplikat geschlossen. Fixt #237 + #580 (Cross-Link fehlt noch) |
-| Inlay Hints | `textDocument/inlayHint` | PR #617 (wir) ready for review; SDK-Gate 3.14.0-139.0.dev; Stufe 2: #622 + sdk#64101 |
+| Inlay Hints | `textDocument/inlayHint` | PR #617 (wir) approved von helin24 (2026-08-21); SDK-Gate 3.14.0-139.0.dev; Stufe 2: #622 + sdk#64101 |
 | Code Actions | `textDocument/codeAction` + `executeCommand` + `applyEdit` | #520, helin24 PR #526 in Arbeit (Draft) |
-| Diagnostics | `textDocument/publishDiagnostics` | PR #612 (helin24) offen, Review ausstehend (+#441); Issue #292 bereits 2026-05 geschlossen |
+| Diagnostics | `textDocument/publishDiagnostics` | ✅ merged 2026-08-21 (PR #612); #441 noch offen; Issue #292 bereits 2026-05 geschlossen |
 | Client Capabilities | `initialize`-Umbau | ✅ merged 2026-08-20 (PR #614) |
 | Find Usages (`findReferences`) | `textDocument/references` | **NEU:** PR #623 (ranbeuer) offen seit 2026-08-21, mit Experimental-Flag-Gating; fixt #396 |
 

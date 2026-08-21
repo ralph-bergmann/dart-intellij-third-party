@@ -10,6 +10,8 @@ become issues (or not).
 - **NEW:** PR #623 (ranbeuer, 2026-08-21) implements Find Usages via
   `textDocument/references`, gated behind the experimental flag → that row in table C is taken.
 - Inlay hints stage 2 is now filed as #622 + dart-lang/sdk#64101 (cross-linked).
+- **Evening addendum:** PR #612 (diagnostics) has also been **merged** (2026-08-21);
+  PR #617 was approved by helin24 (the isExperimental clarification + a merge of main followed).
 
 Sources (all verified on 2026-08-19):
 
@@ -33,9 +35,9 @@ Sources (all verified on 2026-08-19):
 | Go to Declaration (⌘B)         | `textDocument/definition`                                  | ✅ merged (#398 / PR #539)                                                                                         |
 | Read/write highlighting        | `textDocument/documentHighlight`                           | ✅ merged (PR #552)                                                                                                |
 | Go to Type Declaration (⌘⇧B)   | `textDocument/typeDefinition`                              | PR #615 (helin24) open; our #618 closed as duplicate. Fixes #237 + #580 (cross-links still missing in the PR body) |
-| Inlay hints                    | `textDocument/inlayHint`                                   | PR #617 (us) ready for review; SDK gate 3.14.0-139.0.dev; stage 2: #622 + sdk#64101                                |
+| Inlay hints                    | `textDocument/inlayHint`                                   | PR #617 (us) approved by helin24 (2026-08-21); SDK gate 3.14.0-139.0.dev; stage 2: #622 + sdk#64101                |
 | Code actions                   | `textDocument/codeAction` + `executeCommand` + `applyEdit` | #520, helin24 PR #526 in progress (draft)                                                                          |
-| Diagnostics                    | `textDocument/publishDiagnostics`                          | PR #612 (helin24) open, review pending (+#441); issue #292 already closed in 2026-05                               |
+| Diagnostics                    | `textDocument/publishDiagnostics`                          | ✅ merged 2026-08-21 (PR #612); #441 still open; issue #292 already closed in 2026-05                              |
 | Client capabilities            | `initialize` rework                                        | ✅ merged 2026-08-20 (PR #614)                                                                                     |
 | Find Usages (`findReferences`) | `textDocument/references`                                  | **NEW:** PR #623 (ranbeuer) open since 2026-08-21, gated behind the experimental flag; fixes #396                  |
 
