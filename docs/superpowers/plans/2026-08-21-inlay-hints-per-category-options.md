@@ -113,16 +113,19 @@ Model CL for process/style: `7c18d1fa0e5` ("Make textDocument/inlayHint a shared
 CL 536565, sdk#64061) — see `docs/superpowers/plans/2026-07-30-sdk-share-inlay-hint-handler.md`
 (kept as the SDK-handoff template; follow its Step 0/landing/tag-hunting procedure).
 
-### Task 0: File the upstream SDK issue
+### Task 0: File the upstream SDK issue — ✅ DONE 2026-08-21
 
 **Files:** none (GitHub: dart-lang/sdk)
 
-- [ ] **Step 1:** Search existing issues for `lsp over legacy configuration didChangeConfiguration`
-  (none known as of 2026-08-21 — **[verify]**, list open issues first per standing rule).
-- [ ] **Step 2:** File: "LSP-over-Legacy: support the workspace configuration flow
-  (didChangeConfiguration / workspace/configuration)" — describe transport A with the message
-  diagram above, name `dart.inlayHints` as the first consumer, reference sdk#64061 and the
-  #617 discussion. Wait for direction (DanTup/bwilkerson) before writing code, as with sdk#64061.
+- [x] **Step 1:** Duplicate search done 2026-08-21 (queries: `lsp over legacy configuration`,
+  `didChangeConfiguration`, `in:title lsp-over-legacy`): no existing issue. Nearest neighbors,
+  referenced instead: sdk#60326 (the original `dart.inlayHints` config support, closed) and
+  sdk#64013 (dart-fix LSP migration umbrella).
+- [x] **Step 2:** Filed as **[dart-lang/sdk#64101](https://github.com/dart-lang/sdk/issues/64101)**
+  ("Support client configuration (workspace/didChangeConfiguration + workspace/configuration)
+  over LSP-over-Legacy"), cross-linked from flutter/dart-intellij-third-party#622
+  (issuecomment-5368394167). Now: wait for direction (DanTup/bwilkerson) before writing code,
+  as with sdk#64061.
 
 ### Task 1: Accept LSP notifications in the `lsp.handle` envelope
 
