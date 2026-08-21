@@ -94,9 +94,22 @@ plugin answers with [{ ...global "dart" section incl. inlayHints }]  ──▶  
 (next textDocument/inlayHint request)                                ──▶  InlayHintHandler already honors it (F2)
 ```
 
+**Generality note (2026-08-21):** transport A is deliberately NOT inlay-hint-specific — the fetch
+replaces `lspClientConfiguration` as a whole, so every future `dart.*` workspace option
+(documentation, showTodos, renameFilesWithClasses, …) rides the same flow; plugin-side the only
+seam to extend is `DartLspInlayHintsConfiguration.buildDartSection()` (Task 5), which should grow
+into a general `dart`-section builder when the second consumer arrives. Big-picture comment with
+two design questions posted on sdk#64101 (issuecomment-5374291944): (a) global-only vs
+per-workspace-folder `ConfigurationItem`s (relevant for resource-scoped settings like
+`dart.analysisExcludedFolders`), (b) restart semantics — which changes the server re-applies live
+vs the `initializationOptions` tier that is fixed at initialize time (VS Code hard-codes that
+split client-side in Dart-Code's `getSettingsThatRequireRestart()`, incl. `closingLabels`).
+
 ## Open questions to settle with the maintainer BEFORE implementing
 
 * Blessing for transport A (SDK team is the second gatekeeper — file the SDK issue first, Task 0).
+* Scoping + restart semantics — asked on sdk#64101 (see generality note above); fold the answers
+  into Task 2 (per-folder items or not) and Task 8 (which options may need a DAS restart).
 * Parameter-name hints are a 3-state server setting (`none | literal | all`, default `all`,
   fact F3). Proposed UI mapping: parent checkbox off → `none`; parent on → sub-option
   **"Only for literal arguments"** off = `all`, on = `literal`. Alternative (2 options "Literal
