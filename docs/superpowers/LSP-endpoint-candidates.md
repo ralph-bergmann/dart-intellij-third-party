@@ -5,6 +5,13 @@ als Gesprächsgrundlage für den Call zur Migrations-Planung der Maintainer.
 **Bewusst noch keine Issues angelegt**; je nach Ausgang des Calls werden Zeilen aus
 den Tabellen B–D zu Issues (oder eben nicht).
 
+**Status-Update 2026-08-21 (GitHub erneut geprüft):**
+
+- PR #614 (Client Capabilities, helin24) ist **gemergt** (2026-08-20).
+- **NEU:** PR #623 (ranbeuer, 2026-08-21) implementiert Find Usages via
+  `textDocument/references` mit Experimental-Flag-Gating → Zeile in Tabelle C ist vergeben.
+- Inlay Hints Stufe 2 ist jetzt als #622 + dart-lang/sdk#64101 angelegt (kreuzverlinkt).
+
 Quellen (alle am 2026-08-19 verifiziert):
 
 - **JB-Client** = gebündelter JetBrains-LSP-Client (`thirdPartySrc/platform-lsp`,
@@ -27,10 +34,11 @@ Quellen (alle am 2026-08-19 verifiziert):
 | Go to Declaration (⌘B) | `textDocument/definition` | ✅ merged (#398 / PR #539) |
 | Read/Write-Highlighting | `textDocument/documentHighlight` | ✅ merged (PR #552) |
 | Go to Type Declaration (⌘⇧B) | `textDocument/typeDefinition` | PR #615 (helin24) offen; unser #618 als Duplikat geschlossen. Fixt #237 + #580 (Cross-Link fehlt noch) |
-| Inlay Hints | `textDocument/inlayHint` | PR #617 (wir) ready for review; SDK-Gate 3.14.0-139.0.dev |
-| Code Actions | `textDocument/codeAction` + `executeCommand` + `applyEdit` | #520, helin24 PR #526 in Arbeit |
-| Diagnostics | `textDocument/publishDiagnostics` | #292/#612, helin24 in Arbeit (+#441) |
-| Client Capabilities | `initialize`-Umbau | helin24 PR #614 in Arbeit |
+| Inlay Hints | `textDocument/inlayHint` | PR #617 (wir) ready for review; SDK-Gate 3.14.0-139.0.dev; Stufe 2: #622 + sdk#64101 |
+| Code Actions | `textDocument/codeAction` + `executeCommand` + `applyEdit` | #520, helin24 PR #526 in Arbeit (Draft) |
+| Diagnostics | `textDocument/publishDiagnostics` | PR #612 (helin24) offen, Review ausstehend (+#441); Issue #292 bereits 2026-05 geschlossen |
+| Client Capabilities | `initialize`-Umbau | ✅ merged 2026-08-20 (PR #614) |
+| Find Usages (`findReferences`) | `textDocument/references` | **NEU:** PR #623 (ranbeuer) offen seit 2026-08-21, mit Experimental-Flag-Gating; fixt #396 |
 
 ## B. Kandidaten OHNE Legacy-Pfad → global, kein Gating (geringste Review-Reibung)
 
@@ -49,7 +57,7 @@ Quellen (alle am 2026-08-19 verifiziert):
 | Parameter Info (`signatureHelp`) | `textDocument/signatureHelp` | ✅ | — | `ParameterInfoHandler` (PSI) | ⌘P-Popup |
 | Structure View / Outline (`documentSymbol`) | `textDocument/documentSymbol` | ✅ | #402 | `analysis.outline`-Subscription | `dart/textDocument/publishOutline` (Notification) ist dagegen LSP-only + `initializationOptions` → nicht über LoL |
 | Go to Symbol (`workspaceSymbol`) | `workspace/symbol` | ✅ | — | `search.findTopLevelDeclarations` u.a. | |
-| Find Usages (`findReferences`) | `textDocument/references` | ✅ | #396 | `search.findElementReferences` | Verifiziert: LSP- + PSI-Targets landen im „Choose target“-Popup |
+| ~~Find Usages (`findReferences`)~~ | `textDocument/references` | ✅ | #396 | `search.findElementReferences` | **Vergeben → Tabelle A:** PR #623 (ranbeuer) seit 2026-08-21. Unsere Verifikation: LSP- + PSI-Targets landen im „Choose target“-Popup |
 | Call/Type Hierarchy (`callHierarchy`, `typeHierarchy`) | 6 Methoden (`prepare…`, `sub/supertypes`, `in/outgoingCalls`) | ✅ | #403 | `search.getTypeHierarchy` (21 Dateien) | Achtung Provider-Vorrang: Darts `language="Dart"` schlägt die LSP-Provider (`language=""`, `order="last"`) |
 | Go to Implementation (⌘⌥B) | `textDocument/implementation` | ✅ | #404 | `DefinitionsScopedSearch` | **JB-Client hat KEINEN Customizer dafür** (nur `LspDynamicCapabilities`-Buchhaltung) → Client-Arbeit nötig (vendored patchen, Workflow #452) |
 | Rename (`rename`) | `prepareRename`, `rename` | **✗** | #407 | `edit.getRefactoring` RENAME | SDK-Share-CL nötig; Vorsicht: Datei-Umbenennung bei Klassen-Rename (`renameFilesWithClasses` ist LSP-only-Config, s. Q13) |
@@ -79,7 +87,7 @@ Quellen (alle am 2026-08-19 verifiziert):
 1. **B ohne SDK-Arbeit:** `documentColor`, `dart/textDocument/imports` (#582) — global, kein Gating, sichtbarer Nutzen.
 2. **C mit ✅-LoL, die Bugs schließen:** formatting, signatureHelp, documentSymbol, workspaceSymbol.
 3. **Kleine SDK-Share-CLs als Pipeline** (Vorlage vorhanden): foldingRange, selectionRange, documentLink, semanticTokens, rename — je CL + Plugin-PR mit Versions-Gate.
-4. Große Brocken nach Maintainer-Plan: completion, hierarchy, find usages, implementation (Client-Arbeit!).
+4. Große Brocken nach Maintainer-Plan: completion, hierarchy, ~~find usages~~ (PR #623 offen), implementation (Client-Arbeit!).
 
 ## Fragen an Helin (Ergänzung zu OPEN-QUESTIONS-maintainers.md Q0–Q13)
 
