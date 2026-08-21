@@ -1,4 +1,4 @@
-# Nächste Schritte (Stand: 2026-08-19, spät)
+# Nächste Schritte (Stand: 2026-08-21)
 
 ## Wo wir stehen
 
@@ -7,7 +7,8 @@
 | Teil 1 — Rename `DartInlayHintsProvider` → `DartClosingLabelsInlayHintsProvider` | ✅ [#551](https://github.com/flutter/dart-intellij-third-party/pull/551), gemergt 2026-08-10 (`434c86f6`) |
 | Teil 2 — LSP Read/Write-Highlighting | ✅ [#552](https://github.com/flutter/dart-intellij-third-party/pull/552), gemergt 2026-08-10 (`d3d9e7bf`), in Release 508.1.0 |
 | SDK: `textDocument/inlayHint` als Shared Handler | ✅ dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565), schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)); erster Dev-Tag **`3.14.0-139.0.dev`** = `MIN_LSP_INLAY_HINTS_SDK_VERSION` |
-| Teil 3 — LSP Inlay Hints (#159) | 🟡 [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) **Ready for review** (Branch `lsp-inlay-hints` = `20b85b64`, 4 Commits auf upstream `main` `fb835401`) |
+| Teil 3 — LSP Inlay Hints (#159) | 🟡 [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) — helin24s „go ahead and wire this up" (21.08.) umgesetzt: **experimentelles Flag raus, zwei Settings-Checkboxen rein** (Details im Verlauf). Lokal fertig verifiziert bis auf den interaktiven Sandbox-Klicktest → danach committen/pushen (Worktree hat den uncommitteten Stand, Sandbox-IDE läuft) |
+| Stufe 2 — Checkbox pro Hint-Kategorie | 📝 Plan fertig: `plans/2026-08-21-inlay-hints-per-category-options.md` (Transport: LSP-Config-Flow über `lsp.handle`; SDK-CL + Plugin-PR, alle Fakten verifiziert 2026-08-21) |
 | Go to Type Declaration (#580) | ❌ **Duplikat** — helin24s [#615](https://github.com/flutter/dart-intellij-third-party/pull/615) (18.08., 20:16 UTC) war zuerst da; [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) am 19.08. mit Entschuldigung geschlossen. Branch `lsp-type-definition` (`7519c92d`) bleibt vorerst liegen (Location-tolerantes Parsing + Tests als mögliches Follow-up zu #615 angeboten). |
 | Scope-Analyse #207 + Fragenkatalog | ✅ `specs/2026-08-18-lsp-migration-scope-analysis.md`, `OPEN-QUESTIONS-maintainers.md` (Q0–Q13); alle Fragen am 2026-08-18 gepostet, Stacked-PR-Frage am 2026-08-19 zurückgezogen |
 
@@ -30,6 +31,17 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
 
 ## Als Nächstes
 
+0. **#617 fertigstellen (Stand 21.08., alles Weitere hängt daran):**
+   1. Interaktiver Sandbox-Check (IDE läuft bereits aus dem Worktree; Checkliste unten im
+      Verlauf-Eintrag 2026-08-21). Entweder Ralph klickt selbst, oder er gewährt der
+      Claude-Desktop-App Bedienungshilfen + Bildschirmaufnahme (macOS-Einstellungen), dann kann
+      der Agent klicken (IDE-Apps sind auf Klick-Tier beschränkt — reicht für Settings).
+   2. Danach: finaler Testlauf, Commit (nur explizite Dateien, Ralph-Autorschaft), Push.
+   3. PR-Body ersetzen (Entwurf: Scratchpad `pr617-body-draft.md`, Sandbox-Platzhalter füllen;
+      auch den PR-Titel anpassen — „experimental feature" stimmt nicht mehr) und helin antworten
+      (Entwurf: Scratchpad `pr617-reply-helin-draft.md`). Screenshot der Settings-Seite aus der
+      Sandbox wäre gut (helin wollte Workbench-Screenshots; das Kundenprojekt selbst nicht zeigen).
+   4. Follow-up-Issue für Stufe 2 anlegen (aus dem Plan), im PR verlinken.
 1. **Review-Runden begleiten** (#617 + die Fragen):
    - Gemini/Maintainer-Kommentare auf #617 prüfen — insbesondere die Antwort auf die Gating-Frage
      (Flag behalten / nur SDK-Gate / eigene Checkbox) und ggf. auf das Follow-up-Angebot in #618: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
@@ -82,6 +94,9 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   Ausnahme nur mit Owner-Freigabe.
 - **Auf GitHub als Person schreiben** („ich", nicht „wir"); PR-Änderungen eine nach der anderen, lokal
   getestet, erst dann pushen.
+- **Workflow verbindlich: Entwickeln → lokal testen → commit & push** (eingeschärft 21.08.). Ein PR
+  darf nie in einem Zustand sein, in dem sinngemäß steht „wenn ich es getestet habe, stelle ich den
+  PR scharf" — verifizieren gehört VOR den Push, nicht in den PR-Text.
 - **Lessons aus helin24s #615 (2026-08-19):**
   - *Gating:* Der experimentelle LSP-Schalter ist zum Umschalten zwischen Legacy und LSP da, nicht als
     allgemeiner Feature-Toggle. Gibt es einen Legacy-Pfad → Flag (+ Versions-Gate, wenn der Endpoint
@@ -116,6 +131,28 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
   rebased, CLA-Hygiene auf allen Commits.
 - 2026-08-18: Scope-Analyse #207 (16 offene Sub-Issues, drei Gruppen), Fragenkatalog Q0–Q13 (inkl.
   Server-Optionen aus `pkg/analysis_server/tool/lsp_spec/README.md`), Plan Stack 1; alle Fragen gepostet.
+- 2026-08-21: helin24 auf #617: „Maybe go ahead and wire this up" (Kommentar 5365375279) → umgesetzt
+  im Worktree (uncommittet, wartet auf Sandbox-Klicktest): experimentelles Flag aus
+  `isLspInlayHintsEnabled` entfernt (nur noch SDK-Gate), `LspMethod.INLAY_HINT` nicht mehr
+  experimental (Checkbox-Text ohne „inlay hints"), zwei deklarative Settings-Anker-Provider
+  `DartParameterNamesInlayHintsProvider` (`dart.parameter.names`, PARAMETERS_GROUP) und
+  `DartTypesInlayHintsProvider` (`dart.types`, TYPES_GROUP) — beide default OFF, Collector = null,
+  Preview-Dateien mit echtem Server-Label-Format (`name:` bzw. Typ-Präfix) —, Filter
+  `DartLspInlayHintSupport` (kind→Checkbox; beide aus → kein Request; Default-Fallback über
+  `InlayHintsProviderFactory.getProviderInfo`, damit plugin.xml einzige Default-Quelle bleibt,
+  wichtig für den geplanten Default-Flip). TDD: 5 neue Tests in `DartLspInlayHintSupportTest`
+  (RED beobachtet → GREEN), volle Suite 984 Tests grün, verifyPlugin = nur bekannte
+  Lambda-Falschpositive + vorbestehendes 262-EAP-Problem, Sandbox-IDE gestartet (Log fehlerfrei;
+  interaktiver Klicktest blockiert: Claude-Desktop-App fehlen macOS-Berechtigungen).
+  Stufe-2-Plan geschrieben (`plans/2026-08-21-inlay-hints-per-category-options.md`): Transport =
+  LSP-Config-Flow über `lsp.handle` (Fakten: geteilter `InlayHintHandler` liest
+  `lspClientConfiguration` schon; Legacy-Server hat `sendLspRequest` + `editorClientCapabilities`
+  aus #614; LoL-Handler lehnt Notifications heute ab; `DeclarativeInlayHintsSettings` feuert kein
+  Event; Server sendet nie `inlayHint/refresh` → Cache-Invalidierung clientseitig nötig).
+  PR-Body- und helin-Antwort-Entwürfe im Session-Scratchpad.
+- 2026-08-20: #617 auf gemergtes #614 (`d8a651c2`) rebased (Testkonflikt, beide behalten),
+  MERGEABLE; Settings-UI-Vorschlag (zwei deklarative Provider) + Zwei-Stufen-Antwort an helin24
+  gepostet; Default-OFF-Entscheidung (Flip-to-on später bewusst ansprechen).
 - 2026-08-19: Fork-`main` auf upstream `fb835401`; Stack 1 per subagent-driven-development umgesetzt
   (Implementer/Reviewer-Subagenten, Final-Review, Fix-Wave: DAS-Fehler bei `inlayHint` → „keine Hints"
   + Info-Log, weil der Inlay-Hint-Pfad des LSP-Clients Exceptions nicht fängt); beide PRs als Draft
