@@ -7,8 +7,8 @@
 | Teil 1 — Rename `DartInlayHintsProvider` → `DartClosingLabelsInlayHintsProvider` | ✅ [#551](https://github.com/flutter/dart-intellij-third-party/pull/551), gemergt 2026-08-10 (`434c86f6`) |
 | Teil 2 — LSP Read/Write-Highlighting | ✅ [#552](https://github.com/flutter/dart-intellij-third-party/pull/552), gemergt 2026-08-10 (`d3d9e7bf`), in Release 508.1.0 |
 | SDK: `textDocument/inlayHint` als Shared Handler | ✅ dart-lang/sdk `7c18d1fa0e5` ([CL 536565](https://dart-review.googlesource.com/c/sdk/+/536565), schließt [sdk#64061](https://github.com/dart-lang/sdk/issues/64061)); erster Dev-Tag **`3.14.0-139.0.dev`** = `MIN_LSP_INLAY_HINTS_SDK_VERSION` |
-| Teil 3 — LSP Inlay Hints (#159) | 🟡 [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) — helin24s „go ahead and wire this up" (21.08.) umgesetzt: **experimentelles Flag raus, zwei Settings-Checkboxen rein** (Details im Verlauf). Lokal fertig verifiziert bis auf den interaktiven Sandbox-Klicktest → danach committen/pushen (Worktree hat den uncommitteten Stand, Sandbox-IDE läuft) |
-| Stufe 2 — Checkbox pro Hint-Kategorie | 📝 Plan fertig: `plans/2026-08-21-inlay-hints-per-category-options.md` (Transport: LSP-Config-Flow über `lsp.handle`; SDK-CL + Plugin-PR, alle Fakten verifiziert 2026-08-21) |
+| Teil 3 — LSP Inlay Hints (#159) | ✅→Review: [#617](https://github.com/flutter/dart-intellij-third-party/pull/617) — Settings-Konvertierung sandbox-verifiziert (Ralph, 21.08.), gepusht als `02b7515d`, PR-Titel/-Body ersetzt, Antwort an helin24 gepostet (issuecomment-5368311052). Offen: Ralph postet noch 2 Settings-Screenshots als Kommentar |
+| Stufe 2 — Checkbox pro Hint-Kategorie | 📝 [#622](https://github.com/flutter/dart-intellij-third-party/issues/622) angelegt (21.08.); Plan: `plans/2026-08-21-inlay-hints-per-category-options.md` (Transport: LSP-Config-Flow über `lsp.handle`; SDK-CL + Plugin-PR, alle Fakten verifiziert 2026-08-21). Nächster Schritt dort: SDK-Issue (Plan Task 0), erst nach Maintainer-Richtung bauen |
 | Go to Type Declaration (#580) | ❌ **Duplikat** — helin24s [#615](https://github.com/flutter/dart-intellij-third-party/pull/615) (18.08., 20:16 UTC) war zuerst da; [#618](https://github.com/flutter/dart-intellij-third-party/pull/618) am 19.08. mit Entschuldigung geschlossen. Branch `lsp-type-definition` (`7519c92d`) bleibt vorerst liegen (Location-tolerantes Parsing + Tests als mögliches Follow-up zu #615 angeboten). |
 | Scope-Analyse #207 + Fragenkatalog | ✅ `specs/2026-08-18-lsp-migration-scope-analysis.md`, `OPEN-QUESTIONS-maintainers.md` (Q0–Q13); alle Fragen am 2026-08-18 gepostet, Stacked-PR-Frage am 2026-08-19 zurückgezogen |
 
@@ -31,17 +31,10 @@ mit Fix-Wave, erste Gemini-Runde (beantwortet), manueller Sandbox-Check:
 
 ## Als Nächstes
 
-0. **#617 fertigstellen (Stand 21.08., alles Weitere hängt daran):**
-   1. Interaktiver Sandbox-Check (IDE läuft bereits aus dem Worktree; Checkliste unten im
-      Verlauf-Eintrag 2026-08-21). Entweder Ralph klickt selbst, oder er gewährt der
-      Claude-Desktop-App Bedienungshilfen + Bildschirmaufnahme (macOS-Einstellungen), dann kann
-      der Agent klicken (IDE-Apps sind auf Klick-Tier beschränkt — reicht für Settings).
-   2. Danach: finaler Testlauf, Commit (nur explizite Dateien, Ralph-Autorschaft), Push.
-   3. PR-Body ersetzen (Entwurf: Scratchpad `pr617-body-draft.md`, Sandbox-Platzhalter füllen;
-      auch den PR-Titel anpassen — „experimental feature" stimmt nicht mehr) und helin antworten
-      (Entwurf: Scratchpad `pr617-reply-helin-draft.md`). Screenshot der Settings-Seite aus der
-      Sandbox wäre gut (helin wollte Workbench-Screenshots; das Kundenprojekt selbst nicht zeigen).
-   4. Follow-up-Issue für Stufe 2 anlegen (aus dem Plan), im PR verlinken.
+0. **#617: erledigt am 21.08.** (Sandbox-Klicktest Ralph → Commit `02b7515d` → Push → PR-Titel/-Body
+   neu → Antwort an helin24 → #622 angelegt). Rest: Ralph postet die 2 Settings-Screenshots;
+   Apply-vs-OK-Effekt ist Plattform-Verhalten (Daemon plant mit `ModalityState.nonModal`,
+   läuft erst nach Schließen des modalen Dialogs — steht so auch im PR-Body).
 1. **Review-Runden begleiten** (#617 + die Fragen):
    - Gemini/Maintainer-Kommentare auf #617 prüfen — insbesondere die Antwort auf die Gating-Frage
      (Flag behalten / nur SDK-Gate / eigene Checkbox) und ggf. auf das Follow-up-Angebot in #618: `gh pr view <n> --repo flutter/dart-intellij-third-party --comments`
